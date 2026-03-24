@@ -4,10 +4,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { Message } from '@/lib/types';
 
-export function useMessages(conversationId: string) {
+export function useMessages(conversationId: string, initialMessages: Message[] = []) {
   const [supabase] = useState(() => createClient());
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [loading, setLoading] = useState(initialMessages.length === 0);
+
+  useEffect(() => {
+    setMessages(initialMessages);
+    setLoading(initialMessages.length === 0);
+  }, [conversationId, initialMessages]);
 
   useEffect(() => {
     async function loadMessages() {
@@ -22,7 +27,11 @@ export function useMessages(conversationId: string) {
     }
 
     if (conversationId) {
-      void loadMessages();
+      if (initialMessages.length === 0) {
+        void loadMessages();
+      } else {
+        setLoading(false);
+      }
     } else {
       setLoading(false);
     }
@@ -59,7 +68,7 @@ export function useMessages(conversationId: string) {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [conversationId, supabase]);
+  }, [conversationId, initialMessages.length, supabase]);
 
   const sendMessage = useCallback(
     async (content: string, senderId: string) => {

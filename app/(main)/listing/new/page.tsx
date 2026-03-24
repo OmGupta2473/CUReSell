@@ -14,7 +14,7 @@ export default function NewListingPage() {
         </Link>
         <h1 className="text-lg font-semibold">Post a listing</h1>
       </div>
-      <ListingForm />
+      <ListingForm mode="create" />
     </div>
   );
 }

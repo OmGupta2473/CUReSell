@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { MessageCircle, PlusCircle, User } from 'lucide-react';
+import { MessageCircle, PlusCircle, Search, User } from 'lucide-react';
 import { useAuth } from '@/lib/hooks/useAuth';
 
 export function Navbar() {
@@ -34,6 +34,14 @@ export function Navbar() {
             >
               <PlusCircle size={16} />
               Sell
+            </Link>
+            <Link
+              href="/search"
+              className={`rounded-lg p-2 transition-colors hover:bg-gray-100 ${
+                pathname === '/search' ? 'text-black' : 'text-gray-500'
+              }`}
+            >
+              <Search size={20} />
             </Link>
             <Link
               href="/messages"

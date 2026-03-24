@@ -44,7 +44,10 @@ export function useListings({
       }
 
       if (category) query = query.eq('category', category);
-      if (search && search.trim()) query = query.ilike('title', `%${search.trim()}%`);
+      if (search && search.trim()) {
+        const term = `%${search.trim()}%`;
+        query = query.or(`title.ilike.${term},description.ilike.${term}`);
+      }
       if (sellerId) query = query.eq('seller_id', sellerId);
 
       const { data, error } = await query;

@@ -1,53 +1,29 @@
-import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { ProfileHeader } from '@/components/profile/ProfileHeader';
-import { UserListings } from '@/components/profile/UserListings';
-import type { Listing, ListingImage, Profile } from '@/lib/types';
+import { notFound } from 'next/navigation';
+import { ProfileView } from '@/components/profile/ProfileHeader';
 
-type ListingWithImages = Listing & {
-  listing_images?: ListingImage[];
-};
-
-export default async function UserProfilePage({
-  params,
-}: {
-  params: { userId: string };
-}) {
+export default async function UserProfilePage({ params }: { params: { userId: string } }) {
   const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const [{ data: profile, error: profileError }, { data: listings }] = await Promise.all([
-    supabase.from('profiles').select('*').eq('id', params.userId).single(),
-    supabase
-      .from('listings')
-      .select('*, listing_images (id, url, position, storage_path)')
-      .eq('seller_id', params.userId)
-      .in('status', ['active', 'sold'])
-      .order('created_at', { ascending: false }),
-  ]);
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', params.userId)
+    .single();
 
-  if (profileError || !profile) {
-    notFound();
-  }
+  if (!profile) notFound();
 
-  const normalizedListings = ((listings as ListingWithImages[]) ?? []).map((listing) => ({
-    ...listing,
-    listing_images: listing.listing_images?.sort((a, b) => a.position - b.position) ?? [],
-  }));
+  const { data: listings } = await supabase
+    .from('listings')
+    .select('*, listing_images(url, position)')
+    .eq('seller_id', params.userId)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false });
 
-  const soldCount = normalizedListings.filter((listing) => listing.status === 'sold').length;
+  const isOwnProfile = user?.id === params.userId;
 
-  return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <ProfileHeader
-        profile={profile as Profile}
-        totalListings={normalizedListings.length}
-        soldCount={soldCount}
-      />
-      <UserListings
-        listings={normalizedListings}
-        title={`${(profile as Profile).full_name.split(' ')[0]}'s listings`}
-        allowFiltering={false}
-      />
-    </div>
-  );
+  return <ProfileView profile={profile} listings={listings ?? []} isOwnProfile={isOwnProfile} />;
 }

@@ -1,44 +1,96 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { X, Camera } from 'lucide-react';
+import type { ListingImage } from '@/lib/types';
+
+export type ImageUploadItem =
+  | {
+      kind: 'existing';
+      id: string;
+      url: string;
+      storage_path: string;
+      position: number;
+    }
+  | {
+      kind: 'new';
+      id: string;
+      file: File;
+    };
 
 interface ImageUploaderProps {
-  files: File[];
-  onChange: (files: File[]) => void;
+  items: ImageUploadItem[];
+  onChange: (items: ImageUploadItem[]) => void;
   maxFiles?: number;
   error?: string;
 }
 
-export function ImageUploader({ files, onChange, maxFiles = 4, error }: ImageUploaderProps) {
+function createExistingItem(image: ListingImage): ImageUploadItem {
+  return {
+    kind: 'existing',
+    id: image.id,
+    url: image.url,
+    storage_path: image.storage_path,
+    position: image.position,
+  };
+}
+
+export function mapListingImagesToUploadItems(images: ListingImage[] = []): ImageUploadItem[] {
+  return images.map(createExistingItem);
+}
+
+export function ImageUploader({ items, onChange, maxFiles = 4, error }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [previews, setPreviews] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    setPreviews((currentPreviews) => {
+      const nextPreviews: Record<string, string> = {};
+
+      items.forEach((item) => {
+        if (item.kind === 'existing') {
+          nextPreviews[item.id] = item.url;
+          return;
+        }
+
+        nextPreviews[item.id] = currentPreviews[item.id] ?? URL.createObjectURL(item.file);
+      });
+
+      Object.entries(currentPreviews).forEach(([id, url]) => {
+        if (!nextPreviews[id] && url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
+
+      return nextPreviews;
+    });
+  }, [items]);
+
+  useEffect(() => () => {
+    Object.values(previews).forEach((url) => {
+      if (url.startsWith('blob:')) {
+        URL.revokeObjectURL(url);
+      }
+    });
+  }, [previews]);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const selected = Array.from(e.target.files ?? []);
     const valid = selected.filter((f) => f.type.startsWith('image/'));
-    const combined = [...files, ...valid].slice(0, maxFiles);
+    const newItems = valid.map((file, index) => ({
+      kind: 'new' as const,
+      id: `new-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 8)}`,
+      file,
+    }));
+    const combined = [...items, ...newItems].slice(0, maxFiles);
     onChange(combined);
-
-    const newPreviews: string[] = [];
-    combined.forEach((file, i) => {
-      if (previews[i]) {
-        newPreviews[i] = previews[i];
-      } else {
-        const url = URL.createObjectURL(file);
-        newPreviews[i] = url;
-      }
-    });
-    setPreviews(newPreviews);
     e.target.value = '';
   }
 
   function removeFile(index: number) {
-    const updated = files.filter((_, i) => i !== index);
-    const updatedPreviews = previews.filter((_, i) => i !== index);
+    const updated = items.filter((_, i) => i !== index);
     onChange(updated);
-    setPreviews(updatedPreviews);
   }
 
   const slots = Array.from({ length: maxFiles });
@@ -47,15 +99,15 @@ export function ImageUploader({ files, onChange, maxFiles = 4, error }: ImageUpl
     <div className="space-y-2">
       <label className="text-sm font-medium text-gray-700">
         Photos <span className="text-red-500">*</span>
-        <span className="ml-1 font-normal text-gray-400">({files.length}/{maxFiles})</span>
+        <span className="ml-1 font-normal text-gray-400">({items.length}/{maxFiles})</span>
       </label>
       <div className="grid grid-cols-4 gap-2">
         {slots.map((_, i) => {
-          const file = files[i];
-          const preview = previews[i];
+          const item = items[i];
+          const preview = item ? previews[item.id] : undefined;
           const isFirst = i === 0;
 
-          if (file && preview) {
+          if (item && preview) {
             return (
               <div
                 key={i}
@@ -83,16 +135,16 @@ export function ImageUploader({ files, onChange, maxFiles = 4, error }: ImageUpl
               key={i}
               type="button"
               onClick={() => inputRef.current?.click()}
-              disabled={files.length < i}
+              disabled={items.length < i}
               className={`aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-colors
-                ${isFirst && files.length === 0 ? 'border-black bg-gray-50 hover:bg-gray-100' : 'border-gray-200 hover:border-gray-300 bg-white'}
-                ${files.length < i ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+                ${isFirst && items.length === 0 ? 'border-black bg-gray-50 hover:bg-gray-100' : 'border-gray-200 hover:border-gray-300 bg-white'}
+                ${items.length < i ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <Camera
-                size={isFirst && files.length === 0 ? 20 : 16}
+                size={isFirst && items.length === 0 ? 20 : 16}
                 className="text-gray-400"
               />
-              {isFirst && files.length === 0 && (
+              {isFirst && items.length === 0 && (
                 <span className="text-[10px] font-medium text-gray-400">Add photo</span>
               )}
             </button>

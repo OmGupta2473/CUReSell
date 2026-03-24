@@ -10,6 +10,7 @@ export type Category =
 
 export type Condition = 'like_new' | 'good' | 'fair';
 export type ListingStatus = 'active' | 'sold' | 'expired' | 'deleted';
+export type ReportReason = 'spam' | 'fake' | 'inappropriate' | 'already_sold' | 'other';
 
 export interface Profile {
   id: string;
@@ -20,6 +21,9 @@ export interface Profile {
   hostel_block: string | null;
   year_of_study: string | null;
   is_admin: boolean;
+  is_cu_verified: boolean;
+  cu_email: string | null;
+  auth_provider: string | null;
   created_at: string;
 }
 
@@ -75,9 +79,16 @@ export interface Report {
   id: string;
   listing_id: string;
   reporter_id: string;
-  reason: 'spam' | 'fake' | 'inappropriate' | 'already_sold' | 'other';
+  reason: ReportReason;
   description: string | null;
   status: 'pending' | 'reviewed' | 'dismissed';
+  created_at: string;
+}
+
+export interface ListingFavorite {
+  id: string;
+  listing_id: string;
+  user_id: string;
   created_at: string;
 }
 

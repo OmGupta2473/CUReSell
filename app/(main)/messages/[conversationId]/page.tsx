@@ -1,9 +1,9 @@
-import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { redirect, notFound } from 'next/navigation';
 import { ChatThread } from '@/components/chat/ChatThread';
-import type { ListingImage, Profile } from '@/lib/types';
+import type { Message, Profile } from '@/lib/types';
 
-type ConversationDetail = {
+type ChatConversation = {
   id: string;
   listing_id: string;
   buyer_id: string;
@@ -11,15 +11,16 @@ type ConversationDetail = {
   listings?: {
     id: string;
     title: string;
-    price: number;
     status: string;
-    listing_images?: ListingImage[];
+    price: number;
+    is_negotiable: boolean;
+    listing_images: { url: string; position: number }[];
   };
-  buyer?: Profile;
-  seller?: Profile;
+  buyer?: Pick<Profile, 'id' | 'full_name' | 'avatar_url'>;
+  seller?: Pick<Profile, 'id' | 'full_name' | 'avatar_url'>;
 };
 
-export default async function ConversationPage({
+export default async function ChatPage({
   params,
 }: {
   params: { conversationId: string };
@@ -28,59 +29,55 @@ export default async function ConversationPage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
-  if (!user) {
-    redirect('/login');
-  }
-
-  const { data, error } = await supabase
+  const { data: conversation } = await supabase
     .from('conversations')
-    .select(
-      `
-      *,
-      listings (
-        id,
-        title,
-        price,
-        status,
-        listing_images (id, url, position, storage_path)
-      ),
-      buyer:profiles!conversations_buyer_id_fkey (
-        id,
-        email,
-        full_name,
-        avatar_url,
-        department,
-        hostel_block,
-        year_of_study,
-        is_admin,
-        created_at
-      ),
-      seller:profiles!conversations_seller_id_fkey (
-        id,
-        email,
-        full_name,
-        avatar_url,
-        department,
-        hostel_block,
-        year_of_study,
-        is_admin,
-        created_at
-      )
-    `
-    )
+    .select(`
+      id, listing_id, buyer_id, seller_id,
+      listings (id, title, status, price, is_negotiable,
+        listing_images(url, position)),
+      buyer:profiles!conversations_buyer_id_fkey (id, full_name, avatar_url),
+      seller:profiles!conversations_seller_id_fkey (id, full_name, avatar_url)
+    `)
     .eq('id', params.conversationId)
     .single();
 
-  if (error || !data) {
-    notFound();
+  if (!conversation) notFound();
+
+  const normalizedConversation = {
+    ...conversation,
+    listings: Array.isArray(conversation.listings)
+      ? conversation.listings[0]
+      : conversation.listings,
+    buyer: Array.isArray(conversation.buyer) ? conversation.buyer[0] : conversation.buyer,
+    seller: Array.isArray(conversation.seller) ? conversation.seller[0] : conversation.seller,
+  } as ChatConversation;
+
+  if (
+    normalizedConversation.buyer_id !== user.id &&
+    normalizedConversation.seller_id !== user.id
+  ) {
+    redirect('/messages');
   }
 
-  const conversation = data as ConversationDetail;
+  const { data: messages } = await supabase
+    .from('messages')
+    .select('*, profiles(id, full_name, avatar_url)')
+    .eq('conversation_id', params.conversationId)
+    .order('created_at', { ascending: true });
 
-  if (conversation.listings?.listing_images) {
-    conversation.listings.listing_images.sort((a, b) => a.position - b.position);
-  }
+  await supabase
+    .from('messages')
+    .update({ is_read: true })
+    .eq('conversation_id', params.conversationId)
+    .neq('sender_id', user.id);
 
-  return <ChatThread conversation={conversation} currentUserId={user.id} />;
+  return (
+    <ChatThread
+      conversation={normalizedConversation}
+      initialMessages={(messages ?? []) as Message[]}
+      currentUserId={user.id}
+    />
+  );
 }

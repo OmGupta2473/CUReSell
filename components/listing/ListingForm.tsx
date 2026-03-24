@@ -1,18 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type DefaultValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { listingSchema, type ListingFormValues } from '@/lib/validations/listing';
 import { uploadListingImage } from '@/lib/utils/imageCompression';
-import { ImageUploader } from './ImageUploader';
+import { ImageUploader, mapListingImagesToUploadItems, type ImageUploadItem } from './ImageUploader';
 import {
   CATEGORY_LABELS,
   CONDITION_LABELS,
   type Category,
   type Condition,
+  type Listing,
 } from '@/lib/types';
 
 const CATEGORIES = Object.entries(CATEGORY_LABELS) as [Category, string][];
@@ -22,8 +23,30 @@ const CONDITIONS: [Condition, string, string][] = [
   ['fair', 'Fair', 'Visible wear but works fine'],
 ];
 
-export function ListingForm() {
-  const [images, setImages] = useState<File[]>([]);
+interface ListingFormProps {
+  mode?: 'create' | 'edit';
+  initialListing?: Listing;
+}
+
+function getDefaultValues(initialListing?: Listing): DefaultValues<ListingFormValues> {
+  if (!initialListing) {
+    return { is_negotiable: false };
+  }
+
+  return {
+    title: initialListing.title,
+    description: initialListing.description ?? '',
+    priceInput: String(Math.round(initialListing.price / 100)),
+    is_negotiable: initialListing.is_negotiable,
+    category: initialListing.category,
+    condition: initialListing.condition,
+  };
+}
+
+export function ListingForm({ mode = 'create', initialListing }: ListingFormProps) {
+  const [images, setImages] = useState<ImageUploadItem[]>(
+    mapListingImagesToUploadItems(initialListing?.listing_images ?? [])
+  );
   const [imageError, setImageError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -39,12 +62,13 @@ export function ListingForm() {
     formState: { errors },
   } = useForm<ListingFormValues>({
     resolver: zodResolver(listingSchema),
-    defaultValues: { is_negotiable: false },
+    defaultValues: getDefaultValues(initialListing),
   });
 
   const selectedCategory = watch('category');
   const selectedCondition = watch('condition');
   const isNegotiable = watch('is_negotiable');
+  const isEditing = mode === 'edit' && Boolean(initialListing);
 
   async function onSubmit(values: ListingFormValues) {
     if (images.length === 0) {
@@ -59,46 +83,115 @@ export function ListingForm() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data: listing, error: listingError } = await supabase
-        .from('listings')
-        .insert({
-          seller_id: user.id,
-          title: values.title.trim(),
-          description: values.description?.trim() || null,
-          price: parseInt(values.priceInput) * 100,
-          is_negotiable: values.is_negotiable,
-          category: values.category,
-          condition: values.condition,
-          status: 'active',
-        })
-        .select('id')
-        .single();
+      const listingPayload = {
+        title: values.title.trim(),
+        description: values.description?.trim() || null,
+        price: parseInt(values.priceInput, 10) * 100,
+        is_negotiable: values.is_negotiable,
+        category: values.category,
+        condition: values.condition,
+      };
 
-      if (listingError) throw listingError;
+      let listingId = initialListing?.id;
+
+      if (isEditing) {
+        if (!initialListing) throw new Error('Listing not found');
+        if (initialListing.seller_id !== user.id) throw new Error('You can only edit your own listing');
+
+        const { error: listingError } = await supabase
+          .from('listings')
+          .update(listingPayload)
+          .eq('id', initialListing.id)
+          .eq('seller_id', user.id);
+
+        if (listingError) throw listingError;
+      } else {
+        const { data: listing, error: listingError } = await supabase
+          .from('listings')
+          .insert({
+            seller_id: user.id,
+            ...listingPayload,
+            status: 'active',
+          })
+          .select('id')
+          .single();
+
+        if (listingError) throw listingError;
+        listingId = listing.id;
+      }
+
+      if (!listingId) throw new Error('Unable to save listing');
+
+      const existingImages = images.filter(
+        (image): image is Extract<ImageUploadItem, { kind: 'existing' }> => image.kind === 'existing'
+      );
+      const newImages = images.filter(
+        (image): image is Extract<ImageUploadItem, { kind: 'new' }> => image.kind === 'new'
+      );
+
+      if (isEditing && initialListing) {
+        const removedImages = (initialListing.listing_images ?? []).filter(
+          (existingImage) => !existingImages.some((image) => image.id === existingImage.id)
+        );
+
+        if (removedImages.length > 0) {
+          const storagePaths = removedImages
+            .map((image) => image.storage_path)
+            .filter((path): path is string => Boolean(path));
+
+          if (storagePaths.length > 0) {
+            const { error: storageError } = await supabase.storage
+              .from('listing-images')
+              .remove(storagePaths);
+
+            if (storageError) throw storageError;
+          }
+
+          const { error: deleteImagesError } = await supabase
+            .from('listing_images')
+            .delete()
+            .in('id', removedImages.map((image) => image.id));
+
+          if (deleteImagesError) throw deleteImagesError;
+        }
+
+        for (let index = 0; index < existingImages.length; index++) {
+          const { error: positionError } = await supabase
+            .from('listing_images')
+            .update({ position: index + 1 })
+            .eq('id', existingImages[index].id);
+
+          if (positionError) throw positionError;
+        }
+      }
 
       const imageInserts = [];
-      for (let i = 0; i < images.length; i++) {
-        setUploadProgress(Math.round((i / images.length) * 100));
+      for (let i = 0; i < newImages.length; i++) {
+        const position = existingImages.length + i + 1;
+        setUploadProgress(Math.round((i / Math.max(newImages.length, 1)) * 100));
         const { url, storage_path } = await uploadListingImage(
           supabase,
-          images[i],
-          listing.id,
-          i + 1
+          newImages[i].file,
+          listingId,
+          position
         );
         imageInserts.push({
-          listing_id: listing.id,
+          listing_id: listingId,
           url,
           storage_path,
-          position: i + 1,
+          position,
         });
       }
+
+      if (imageInserts.length > 0) {
+        const { error: imgError } = await supabase.from('listing_images').insert(imageInserts);
+
+        if (imgError) throw imgError;
+      }
+
       setUploadProgress(100);
 
-      const { error: imgError } = await supabase.from('listing_images').insert(imageInserts);
-
-      if (imgError) throw imgError;
-
-      router.push(`/listing/${listing.id}`);
+      router.push(`/listing/${listingId}`);
       router.refresh();
     } catch (err: unknown) {
       const message =
@@ -111,7 +204,7 @@ export function ListingForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pb-8">
-      <ImageUploader files={images} onChange={setImages} error={imageError} />
+      <ImageUploader items={images} onChange={setImages} error={imageError} />
 
       <div className="space-y-1.5">
         <label className="text-sm font-medium text-gray-700">
@@ -272,7 +365,7 @@ export function ListingForm() {
             {uploadProgress < 100 ? `Uploading… ${uploadProgress}%` : 'Saving…'}
           </>
         ) : (
-          'Post listing'
+          isEditing ? 'Save changes' : 'Post listing'
         )}
       </button>
     </form>

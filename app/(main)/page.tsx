@@ -1,23 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Plus, ShieldCheck, Sparkles, Store, Truck } from 'lucide-react';
 import { useListings } from '@/lib/hooks/useListings';
 import { useAuth } from '@/lib/hooks/useAuth';
+import { FeedControls } from '@/components/listing/FeedControls';
 import { ListingGrid, ListingGridSkeleton } from '@/components/listing/ListingGrid';
 import { CategoryFilter } from '@/components/listing/CategoryFilter';
 import { SearchBar } from '@/components/listing/SearchBar';
 import type { Category } from '@/lib/types';
+import {
+  DEFAULT_LISTING_FEED_FILTERS,
+  applyListingFeedFilters,
+  countActiveFeedFilters,
+  getListingFilterOptions,
+  type ListingFeedFilters,
+} from '@/lib/utils/listingFeed';
 
 const guestCategories = [
-  { label: 'Furniture', icon: '🪑', blurb: 'Tables, chairs, lamps, organizers' },
-  { label: 'Electronics', icon: '💻', blurb: 'Monitors, routers, gadgets, speakers' },
-  { label: 'Books', icon: '📚', blurb: 'Semester notes, prep books, novels' },
-  { label: 'Kitchen', icon: '🍳', blurb: 'Pans, kettles, mugs, mini appliances' },
-  { label: 'Clothes', icon: '👕', blurb: 'Fresh fits, jackets, ethnic wear' },
-  { label: 'Cycles', icon: '🚲', blurb: 'Campus rides and quick commutes' },
+  { label: 'Furniture', icon: 'ðŸª‘', blurb: 'Tables, chairs, lamps, organizers' },
+  { label: 'Electronics', icon: 'ðŸ’»', blurb: 'Monitors, routers, gadgets, speakers' },
+  { label: 'Books', icon: 'ðŸ“š', blurb: 'Semester notes, prep books, novels' },
+  { label: 'Kitchen', icon: 'ðŸ³', blurb: 'Pans, kettles, mugs, mini appliances' },
+  { label: 'Clothes', icon: 'ðŸ‘•', blurb: 'Fresh fits, jackets, ethnic wear' },
+  { label: 'Cycles', icon: 'ðŸš²', blurb: 'Campus rides and quick commutes' },
 ] as const;
 
 const guestHighlights = [
@@ -178,13 +186,21 @@ function GuestLanding() {
 function FeedContent() {
   const [category, setCategory] = useState<Category | null>(null);
   const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState<ListingFeedFilters>(DEFAULT_LISTING_FEED_FILTERS);
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const { data: listings, isLoading, error } = useListings({
     category,
     search,
     enabled: !!user,
   });
+
+  const filterOptions = useMemo(() => getListingFilterOptions(listings ?? []), [listings]);
+  const filteredListings = useMemo(
+    () => applyListingFeedFilters(listings ?? [], filters),
+    [filters, listings]
+  );
+  const activeFilterCount = countActiveFeedFilters(filters);
 
   if (authLoading) {
     return <ListingGridSkeleton />;
@@ -198,6 +214,15 @@ function FeedContent() {
     <div className="space-y-4">
       <SearchBar value={search} onChange={setSearch} />
       <CategoryFilter selected={category} onChange={setCategory} />
+      <FeedControls
+        filters={filters}
+        onChange={setFilters}
+        hostelOptions={filterOptions.hostelBlocks}
+        departmentOptions={filterOptions.departments}
+        resultCount={filteredListings.length}
+        activeFilterCount={activeFilterCount}
+        primaryLocationLabel={profile?.hostel_block ?? null}
+      />
 
       {isLoading && <ListingGridSkeleton />}
 
@@ -207,27 +232,41 @@ function FeedContent() {
         </div>
       )}
 
-      {!isLoading && !error && listings && listings.length === 0 && (
+      {!isLoading && !error && listings && filteredListings.length === 0 && (
         <div className="space-y-3 py-16 text-center">
-          <div className="text-4xl">📦</div>
-          <p className="font-medium text-gray-700">No listings yet</p>
+          <div className="text-4xl">ðŸ“¦</div>
+          <p className="font-medium text-gray-700">No listings match these filters</p>
           <p className="text-sm text-gray-400">
-            {search || category
-              ? 'Try a different search or category'
+            {search || category || activeFilterCount > 0
+              ? 'Try a different keyword, category, or filter combination'
               : 'Be the first to post something!'}
           </p>
-          {!search && !category && (
-            <button
-              onClick={() => router.push('/listing/new')}
-              className="mt-2 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
-            >
-              Post a listing
-            </button>
-          )}
+          <div className="flex flex-col justify-center gap-2 sm:flex-row">
+            {(search || category || activeFilterCount > 0) && (
+              <button
+                onClick={() => {
+                  setSearch('');
+                  setCategory(null);
+                  setFilters(DEFAULT_LISTING_FEED_FILTERS);
+                }}
+                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-gray-300"
+              >
+                Clear everything
+              </button>
+            )}
+            {!search && !category && activeFilterCount === 0 && (
+              <button
+                onClick={() => router.push('/listing/new')}
+                className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+              >
+                Post a listing
+              </button>
+            )}
+          </div>
         </div>
       )}
 
-      {!isLoading && listings && listings.length > 0 && <ListingGrid listings={listings} />}
+      {!isLoading && filteredListings.length > 0 && <ListingGrid listings={filteredListings} />}
 
       <button
         onClick={() => router.push('/listing/new')}

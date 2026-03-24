@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { VerifiedBadge } from '@/components/ui/VerifiedBadge';
 import { formatPrice, timeAgo, conditionColor } from '@/lib/utils/formatters';
 import { CONDITION_LABELS } from '@/lib/types';
 import type { Listing } from '@/lib/types';
@@ -52,13 +53,16 @@ export function ListingCard({ listing }: ListingCardProps) {
           <p className="text-sm font-semibold text-gray-900">{formatPrice(listing.price)}</p>
           <p className="truncate text-sm leading-tight text-gray-600">{listing.title}</p>
           <div className="flex items-center justify-between pt-0.5">
-            <span
-              className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${conditionColor(
-                listing.condition
-              )}`}
-            >
-              {CONDITION_LABELS[listing.condition]}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span
+                className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${conditionColor(
+                  listing.condition
+                )}`}
+              >
+                {CONDITION_LABELS[listing.condition]}
+              </span>
+              {listing.profiles?.is_cu_verified && <VerifiedBadge size="sm" />}
+            </div>
             <span className="text-[10px] text-gray-400">{timeAgo(listing.created_at)}</span>
           </div>
         </div>
