@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 function VerifyPageContent() {
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState(['', '', '', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [resent, setResent] = useState(false);
@@ -13,6 +13,7 @@ function VerifyPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || '';
+  const nextPath = searchParams.get('next') || '/';
   const supabase = createClient();
 
   useEffect(() => {
@@ -24,7 +25,7 @@ function VerifyPageContent() {
     const newOtp = [...otp];
     newOtp[index] = value.slice(-1);
     setOtp(newOtp);
-    if (value && index < 5) inputRefs.current[index + 1]?.focus();
+    if (value && index < 7) inputRefs.current[index + 1]?.focus();
   }
 
   function handleKeyDown(index: number, e: React.KeyboardEvent) {
@@ -36,7 +37,7 @@ function VerifyPageContent() {
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
     const token = otp.join('');
-    if (token.length < 6) return;
+    if (token.length < 8) return;
     setLoading(true);
     setError('');
     const { error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
@@ -45,7 +46,9 @@ function VerifyPageContent() {
       setLoading(false);
       return;
     }
-    router.push('/');
+    const safeNextPath =
+      nextPath.startsWith('/') && !nextPath.startsWith('//') ? nextPath : '/';
+    router.push(safeNextPath);
     router.refresh();
   }
 
@@ -64,7 +67,7 @@ function VerifyPageContent() {
           </div>
           <h1 className="text-xl font-semibold text-gray-900">Check your email</h1>
           <p className="mt-1 text-sm text-gray-500">
-            We sent a 6-digit code to
+            We sent a 8-digit code to
             <br />
             <span className="font-medium text-gray-700">{email}</span>
           </p>
@@ -90,7 +93,7 @@ function VerifyPageContent() {
           {error && <p className="text-center text-xs text-red-500">{error}</p>}
           <button
             type="submit"
-            disabled={loading || otp.join('').length < 6}
+            disabled={loading || otp.join('').length < 8}
             className="h-10 w-full rounded-lg bg-black text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? 'Verifying…' : 'Verify code'}
@@ -105,7 +108,12 @@ function VerifyPageContent() {
             {resent ? 'Code sent! Check your inbox.' : 'Didn&apos;t get a code? Resend'}
           </button>
           <br />
-          <button onClick={() => router.push('/login')} className="text-xs text-gray-400 hover:underline">
+          <button
+            onClick={() =>
+              router.push(`/login?next=${encodeURIComponent(nextPath || '/')}`)
+            }
+            className="text-xs text-gray-400 hover:underline"
+          >
             Wrong email? Go back
           </button>
         </div>

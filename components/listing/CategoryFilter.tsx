@@ -25,10 +25,10 @@ export function CategoryFilter({ selected, onChange }: CategoryFilterProps) {
     <div className="-mx-3 flex gap-2 overflow-x-auto px-3 pb-1 scrollbar-hide">
       <button
         onClick={() => onChange(null)}
-        className={`flex-shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+        className={`flex-shrink-0 rounded-full border px-3.5 py-2 text-sm font-medium transition-all ${
           selected === null
-            ? 'border-black bg-black text-white'
-            : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+            ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+            : 'border-gray-200 bg-white text-gray-600 hover:border-orange-200 hover:bg-orange-50/60'
         }`}
       >
         All
@@ -37,10 +37,10 @@ export function CategoryFilter({ selected, onChange }: CategoryFilterProps) {
         <button
           key={value}
           onClick={() => onChange(selected === value ? null : value)}
-          className={`flex flex-shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+          className={`flex flex-shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm font-medium transition-all ${
             selected === value
-              ? 'border-black bg-black text-white'
-              : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+              ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+              : 'border-gray-200 bg-white text-gray-600 hover:border-orange-200 hover:bg-orange-50/60'
           }`}
         >
           <span className="text-base leading-none">{CATEGORY_ICONS[value]}</span>

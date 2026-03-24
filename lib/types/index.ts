@@ -41,6 +41,7 @@ export interface Listing {
   title: string;
   description: string | null;
   price: number;
+  is_featured: boolean;
   is_negotiable: boolean;
   category: Category;
   condition: Condition;

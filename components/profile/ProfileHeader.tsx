@@ -50,7 +50,8 @@ export function ProfileView({ profile, listings, isOwnProfile }: ProfileViewProp
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    router.push('/login');
+    router.push('/');
+    router.refresh();
   }
 
   return (

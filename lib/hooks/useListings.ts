@@ -26,13 +26,11 @@ export function useListings({
     queryFn: async (): Promise<Listing[]> => {
       let query = supabase
         .from('listings')
-        .select(
-          `
-          *,
-          profiles (id, full_name, avatar_url, hostel_block, department),
-          listing_images (id, url, position, storage_path)
-        `
-        )
+        .select(`
+  *,
+  profiles!left (id, full_name, avatar_url, hostel_block, department),
+  listing_images!left (id, url, position, storage_path)
+`)
         .order('created_at', { ascending: false });
 
       if (status === 'active') {

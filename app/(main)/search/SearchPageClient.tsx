@@ -114,7 +114,7 @@ export function SearchPageClient({
   const { data: listings, isLoading, error } = useListings({
     category,
     search: deferredSearch,
-    enabled: !!user,
+    enabled: true, // Allow public users to see listings
   });
 
   const filterOptions = useMemo(() => getListingFilterOptions(listings ?? []), [listings]);

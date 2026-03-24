@@ -1,6 +1,16 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+const PUBLIC_ROUTES = ['/', '/login', '/verify', '/api/auth/callback'];
+
+function isPublicRoute(path: string) {
+  return (
+    PUBLIC_ROUTES.includes(path) ||
+    path === '/search' ||
+    /^\/listing\/[^/]+$/.test(path)
+  );
+}
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -23,21 +33,23 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
 
-  const isAuthPage = path === '/login' || path === '/verify';
-  const isPublicPage = path === '/';
-  const isPublicAsset = path.startsWith('/_next') || path.startsWith('/api/auth') || path === '/favicon.ico';
-
+  const isPublicAsset =
+    path.startsWith('/_next') || path.startsWith('/api/auth') || path === '/favicon.ico';
   if (isPublicAsset) return supabaseResponse;
 
-  if (!user && !isAuthPage && !isPublicPage) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  // Signed-in users should not hit OTP verification directly.
+  if (user && path === '/verify') {
+    return NextResponse.redirect(new URL('/feed', request.url));
   }
 
-  if (user && isAuthPage) {
-    return NextResponse.redirect(new URL('/', request.url));
+  // Unauthenticated users going to protected routes -> send to login.
+  if (!user && !isPublicRoute(path)) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   return supabaseResponse;

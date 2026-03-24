@@ -26,7 +26,7 @@ export function InboxClient({ conversations, currentUserId }: InboxClientProps) 
   }
 
   return (
-    <div className="space-y-1 -mx-3">
+    <div className="space-y-1 px-3 w-full">
       <h1 className="text-lg font-semibold px-3 mb-4">Messages</h1>
       {conversations.map((conv) => {
         const isBuyer = conv.buyer_id === currentUserId;
@@ -47,7 +47,7 @@ export function InboxClient({ conversations, currentUserId }: InboxClientProps) 
 
         return (
           <Link key={conv.id} href={`/messages/${conv.id}`}>
-            <div className="flex items-center gap-3 px-3 py-3 hover:bg-gray-50 transition-colors">
+            <div className="flex items-center gap-3 py-3 hover:bg-gray-50 transition-colors w-full">
               <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
                 {coverImage ? (
                   <Image src={coverImage} alt={listing?.title ?? ''} fill className="object-cover" />

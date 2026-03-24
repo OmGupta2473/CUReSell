@@ -10,6 +10,7 @@ interface RawListingRow {
   seller_id: string;
   title: string;
   price: number;
+  is_featured: boolean;
   status: ListingStatus;
   category: keyof typeof import('@/lib/types').CATEGORY_LABELS;
   created_at: string;
@@ -77,7 +78,7 @@ export default async function AdminPage() {
       ? Promise.resolve({ data: [] as RawListingRow[] })
       : supabase
           .from('listings')
-          .select('id, seller_id, title, price, status, category, created_at, profiles(id, full_name, email)')
+          .select('id, seller_id, title, price, is_featured, status, category, created_at, profiles(id, full_name, email)')
           .in('id', listingIds),
     reporterIds.length === 0
       ? Promise.resolve({ data: [] as AdminProfile[] })

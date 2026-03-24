@@ -104,7 +104,11 @@ export function ListingDetail({ listing }: ListingDetailProps) {
   }
 
   async function handleStartChat() {
-    if (!user || !seller) return;
+    if (!user) {
+      router.push(`/login?next=${encodeURIComponent(`/listing/${listing.id}`)}`);
+      return;
+    }
+    if (!seller) return;
     setChatLoading(true);
 
     try {
@@ -232,8 +236,14 @@ export function ListingDetail({ listing }: ListingDetailProps) {
         </button>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => void handleToggleFavorite()}
-            disabled={!user || isSeller || favoriteLoading}
+            onClick={() => {
+              if (!user) {
+                router.push(`/login?next=${encodeURIComponent(`/listing/${listing.id}`)}`);
+                return;
+              }
+              void handleToggleFavorite();
+            }}
+            disabled={isSeller || favoriteLoading}
             className={`rounded-xl p-2 transition-colors ${
               saved ? 'bg-rose-50 text-rose-600' : 'text-gray-600 hover:bg-gray-100'
             } disabled:cursor-not-allowed disabled:opacity-50`}
@@ -472,7 +482,7 @@ export function ListingDetail({ listing }: ListingDetailProps) {
               ) : (
                 <>
                   <MessageCircle size={18} />
-                  {isSold ? 'This item is sold' : 'Chat with seller'}
+                  {isSold ? 'This item is sold' : user ? 'Chat with seller' : 'Log in to chat'}
                 </>
               )}
             </button>

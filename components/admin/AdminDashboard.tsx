@@ -34,6 +34,7 @@ interface AdminReportListing {
   seller_id: string;
   title: string;
   price: number;
+  is_featured: boolean;
   status: ListingStatus;
   category: keyof typeof CATEGORY_LABELS;
   created_at: string;
@@ -138,6 +139,34 @@ export function AdminDashboard({
       setMessage('Could not update listing');
     } finally {
       setBusyReportId(null);
+    }
+  }
+
+  async function toggleFeatured(listingId: string, current: boolean) {
+    try {
+      const { error } = await supabase
+        .from('listings')
+        .update({ is_featured: !current })
+        .eq('id', listingId);
+
+      if (error) throw error;
+
+      setReports((currentReports) =>
+        currentReports.map((report) => {
+          if (report.listing?.id !== listingId) return report;
+          return {
+            ...report,
+            listing: {
+              ...report.listing,
+              is_featured: !current,
+            },
+          };
+        })
+      );
+      setMessage(!current ? 'Listing marked as featured' : 'Listing removed from featured');
+      router.refresh();
+    } catch {
+      setMessage('Could not update featured status');
     }
   }
 
@@ -315,6 +344,20 @@ export function AdminDashboard({
                           <XCircle size={16} />
                           Dismiss
                         </button>
+                        {report.listing && report.listing.status !== 'deleted' && (
+                          <button
+                            onClick={() =>
+                              void toggleFeatured(report.listing!.id, report.listing!.is_featured)
+                            }
+                            className={`text-xs px-2 py-1 rounded-lg border transition-colors ${
+                              report.listing.is_featured
+                                ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
+                                : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
+                            }`}
+                          >
+                            {report.listing.is_featured ? 'Featured' : 'Set featured'}
+                          </button>
+                        )}
                         {report.listing && report.listing.status !== 'deleted' && (
                           <button
                             onClick={() => void handleListingStatus(report.id, report.listing!.id, 'deleted')}

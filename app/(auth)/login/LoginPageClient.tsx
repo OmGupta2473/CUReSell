@@ -6,9 +6,10 @@ import { createClient } from '@/lib/supabase/client';
 
 interface LoginPageClientProps {
   initialError?: string;
+  nextPath?: string;
 }
 
-export default function LoginPageClient({ initialError }: LoginPageClientProps) {
+export default function LoginPageClient({ initialError, nextPath }: LoginPageClientProps) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -18,6 +19,8 @@ export default function LoginPageClient({ initialError }: LoginPageClientProps) 
   const supabase = createClient();
   const DOMAIN = process.env.NEXT_PUBLIC_COLLEGE_EMAIL_DOMAIN!;
   const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME!;
+  const safeNextPath =
+    nextPath && nextPath.startsWith('/') && !nextPath.startsWith('//') ? nextPath : '/';
 
   async function handleGoogleSignIn() {
     setGoogleLoading(true);
@@ -29,7 +32,7 @@ export default function LoginPageClient({ initialError }: LoginPageClientProps) 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${redirectOrigin}/api/auth/callback`,
+        redirectTo: `${redirectOrigin}/api/auth/callback?next=${encodeURIComponent(safeNextPath)}`,
       },
     });
     if (error) {
@@ -55,7 +58,11 @@ export default function LoginPageClient({ initialError }: LoginPageClientProps) 
       setLoading(false);
       return;
     }
-    router.push(`/verify?email=${encodeURIComponent(email.toLowerCase())}`);
+    router.push(
+      `/verify?email=${encodeURIComponent(email.toLowerCase())}&next=${encodeURIComponent(
+        safeNextPath
+      )}`
+    );
   }
 
   return (

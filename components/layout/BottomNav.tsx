@@ -14,7 +14,7 @@ export function BottomNav() {
   }
 
   const links = [
-    { href: '/', icon: Home, label: 'Home' },
+    { href: '/feed', icon: Home, label: 'Home' },
     { href: '/search', icon: Search, label: 'Search' },
     { href: '/listing/new', icon: PlusCircle, label: 'Post', accent: true },
     { href: '/messages', icon: MessageCircle, label: 'Messages' },

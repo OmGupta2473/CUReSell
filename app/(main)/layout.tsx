@@ -1,5 +1,5 @@
 import { Navbar } from '@/components/layout/Navbar';
-import { BottomNav } from '@/components/layout/BottomNav';
+
 import { createClient } from '@/lib/supabase/server';
 import { ProfileSetupModal } from '@/components/auth/ProfileSetupModal';
 
@@ -34,7 +34,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
           <main className="max-w-5xl mx-auto px-3 pt-16 pb-20 md:pb-6">
             {children}
           </main>
-          <BottomNav />
+         {/* <BottomNav /> */}
         </>
       )}
     </div>
