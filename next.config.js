@@ -21,7 +21,7 @@ const nextConfig = {
     // Filesystem cache is noisy and flaky on this Windows + OneDrive workspace.
     // Keeping Webpack cache in memory avoids PackFileCacheStrategy serialization overhead.
     config.cache = {
-      type: 'memory',
+      type: dev ? 'memory' : false,
     };
 
     return config;

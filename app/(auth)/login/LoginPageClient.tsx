@@ -45,7 +45,7 @@ export default function LoginPageClient({ initialError, nextPath }: LoginPageCli
     e.preventDefault();
     setError('');
     if (!email.toLowerCase().endsWith(`@${DOMAIN}`)) {
-      setError(`Only @${DOMAIN} email addresses allowed here`);
+      setError('Only Chandigarh University email addresses are allowed.');
       return;
     }
     setLoading(true);

@@ -6,7 +6,7 @@ export const loginSchema = z.object({
 
 export const otpSchema = z.object({
   email: z.string().email(),
-  token: z.string().length(6, 'Enter the 6-digit code'),
+  token: z.string().length(8, 'Enter the 8-digit code'),
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;

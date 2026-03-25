@@ -37,7 +37,7 @@ const BANNER_SLIDES = [
     sub: 'Study tables, mattresses, kitchen items, and daily essentials find a new owner fast.',
     cta: 'Post a listing',
     href: '/login?next=%2Flisting%2Fnew',
-    bg: 'from-slate-900 to-slate-700',
+    bg: 'https://res.cloudinary.com/dpzlctdso/image/upload/v1774453897/IMG_9296_xcvisz.jpg',
     accent: '#f59e0b',
   },
   {
@@ -46,7 +46,7 @@ const BANNER_SLIDES = [
     sub: 'Buy quality second-hand items from verified CU students.',
     cta: 'Browse listings',
     href: '/search',
-    bg: 'from-teal-900 to-teal-700',
+    bg: 'https://res.cloudinary.com/dpzlctdso/image/upload/v1774453897/IMG_9295_fhfhyd.jpg',
     accent: '#5eead4',
   },
   {
@@ -55,7 +55,7 @@ const BANNER_SLIDES = [
     sub: 'Trusted sellers, in-app chat, no OLX spam.',
     cta: 'See electronics',
     href: '/search?category=electronics',
-    bg: 'from-indigo-900 to-indigo-700',
+    bg: 'https://res.cloudinary.com/dpzlctdso/image/upload/v1774453897/IMG_9294_mbt4jg.jpg',
     accent: '#a5b4fc',
   },
   {
@@ -64,7 +64,7 @@ const BANNER_SLIDES = [
     sub: 'Buy from your seniors. Sell to your juniors.',
     cta: 'Find books',
     href: '/search?category=books',
-    bg: 'from-rose-900 to-rose-700',
+    bg: 'https://res.cloudinary.com/dpzlctdso/image/upload/v1774453897/IMG_9297_ckjhkw.jpg',
     accent: '#fda4af',
   },
 ] as const;
@@ -113,11 +113,6 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const counterRef = useRef<HTMLDivElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  const boostedCount = studentCount + 82;
-  const [animatedCount, setAnimatedCount] = useState(0);
 
   useEffect(() => {
     if (isPaused) return;
@@ -145,44 +140,14 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
     window.location.href = q ? `/search?q=${encodeURIComponent(q)}` : '/search';
   }
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.5 }
-    );
+  const boostedCount = studentCount + 82;
 
-    if (counterRef.current) observer.observe(counterRef.current);
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!isVisible) return;
-
-    let start = animatedCount;
-    const end = boostedCount;
-
-    const duration = 1200;
-    const stepTime = 20;
-    const step = Math.ceil((end - start) / (duration / stepTime));
-
-    const timer = setInterval(() => {
-      start += step;
-
-      if (start >= end) {
-        start = end;
-        clearInterval(timer);
-      }
-
-      setAnimatedCount(start);
-    }, stepTime);
-
-    return () => clearInterval(timer);
-  }, [boostedCount, isVisible, animatedCount]);
+const displayCount =
+  boostedCount > 0
+    ? boostedCount >= 1000
+      ? `${(boostedCount / 1000).toFixed(1)}k+`
+      : `${boostedCount}+`
+    : '100+';
   const browseHref = '/#browse';
   const howItWorksHref = '/#how-it-works';
   const searchHref = '/search';
@@ -220,95 +185,81 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
         </div>
 
         <div
-          className="relative overflow-hidden"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
+          className="relative text-white bg-cover bg-center transition-all duration-700"
+          style={{
+            backgroundImage: `url(${slide.bg})`,
+            height: '360px',
+            minHeight: '360px',
+          }}
         >
-          <div
-            className={`relative bg-gradient-to-br ${slide.bg} text-white transition-all duration-700`}
-            style={{ height: '360px', minHeight: '360px' }}
-          >
-            <div
-              className="mx-auto flex min-h-[360px] max-w-6xl flex-col justify-center px-6 py-8 md:py-12"
-            >
-              <div className="flex min-h-[160px] max-w-xl flex-col justify-between">
-                <span
-                  className="mb-6 inline-flex h-9 max-w-fit items-center rounded-full border px-4 text-xs font-semibold whitespace-nowrap"
-                  style={{
-                    background: `${slide.accent}25`,
-                    color: slide.accent,
-                    border: `1px solid ${slide.accent}40`,
-                  }}
-                >
-                  {slide.tag}
-                </span>
-                <h2 className="mb-3 min-h-[56px] text-2xl font-bold leading-tight text-white md:min-h-[72px] md:text-3xl">
-                  {slide.heading}
-                </h2>
-                <p className="mb-6 min-h-[40px] text-sm leading-relaxed text-white/70 md:min-h-[48px] md:text-base">
-                  {slide.sub}
-                </p>
-                <Link
-                  href={slideHref}
-                  className="inline-flex h-10 w-[150px] md:w-[180px] items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all hover:scale-105"
-                  style={{ background: slide.accent, color: '#111' }}
-                >
-                  {slide.cta}
-                  <ArrowRight size={14} />
-                </Link>
-              </div>
-            </div>
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-black/50"></div>
 
-            <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-              {BANNER_SLIDES.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => goTo(i)}
-                  className={`rounded-full transition-all duration-300 ${
-                    i === currentSlide
-                      ? 'h-2 w-6 bg-white'
-                      : 'h-2 w-2 bg-white/40 hover:bg-white/60'
-                  }`}
-                  aria-label={`Go to slide ${i + 1}`}
-                />
-              ))}
-            </div>
-
-            <button
-              onClick={() => goTo((currentSlide - 1 + BANNER_SLIDES.length) % BANNER_SLIDES.length)}
-              className="absolute left-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
-              aria-label="Previous slide"
-            >
-              <ChevronLeft size={16} className="text-white" />
-            </button>
-            <button
-              onClick={() => goTo((currentSlide + 1) % BANNER_SLIDES.length)}
-              className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
-              aria-label="Next slide"
-            >
-              <ChevronRight size={16} className="text-white" />
-            </button>
-          </div>
-        </div>
-
-        <div id="browse" className="mx-auto max-w-6xl px-4 py-10">
-          <h2 className="mb-5 text-lg font-semibold text-gray-900">Popular on campus</h2>
-          <div className="grid grid-cols-4 gap-3 sm:grid-cols-8">
-            {(Object.entries(CATEGORY_LABELS) as [Category, string][]).map(([cat, label]) => (
-              <Link
-                key={cat}
-                href={`/search?category=${cat}`}
-                className="group flex flex-col items-center gap-2 rounded-2xl bg-gray-50 p-3 transition-colors hover:bg-gray-100"
+          <div className="relative z-10 mx-auto flex min-h-[360px] max-w-6xl flex-col justify-center px-6 py-8 md:py-12">
+            <div className="flex min-h-[160px] max-w-xl flex-col justify-between">
+              <span
+                className="mb-6 inline-flex h-9 max-w-fit items-center rounded-full border px-4 text-xs font-semibold whitespace-nowrap"
+                style={{
+                  background: `${slide.accent}25`,
+                  color: slide.accent,
+                  border: `1px solid ${slide.accent}40`,
+                }}
               >
-                <span className="text-xl md:text-3xl">{CATEGORY_ICONS[cat]}</span>
-                <span className="text-center text-xs font-medium leading-tight text-gray-600 group-hover:text-gray-900">
-                  {label}
-                </span>
+                {slide.tag}
+              </span>
+
+              <h2 className="mb-3 min-h-[56px] text-2xl font-bold leading-tight text-white md:min-h-[72px] md:text-3xl">
+                {slide.heading}
+              </h2>
+
+              <p className="mb-6 min-h-[40px] text-sm leading-relaxed text-white/70 md:min-h-[48px] md:text-base">
+                {slide.sub}
+              </p>
+
+              <Link
+                href={slideHref}
+                className="inline-flex h-10 w-[150px] md:w-[180px] items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all hover:scale-105"
+                style={{ background: slide.accent, color: '#111' }}
+              >
+                {slide.cta}
+                <ArrowRight size={14} />
               </Link>
+            </div>
+          </div>
+
+          {/* Left Arrow */}
+          <button
+            onClick={() => goTo((currentSlide - 1 + BANNER_SLIDES.length) % BANNER_SLIDES.length)}
+            className="absolute left-3 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft size={16} className="text-white" />
+          </button>
+
+          {/* Right Arrow */}
+          <button
+            onClick={() => goTo((currentSlide + 1) % BANNER_SLIDES.length)}
+            className="absolute right-3 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
+            aria-label="Next slide"
+          >
+            <ChevronRight size={16} className="text-white" />
+          </button>
+
+          {/* Slider Dots */}
+          <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+            {BANNER_SLIDES.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                className={`rounded-full transition-all duration-300 ${i === currentSlide
+                    ? 'h-2 w-6 bg-white'
+                    : 'h-2 w-2 bg-white/40 hover:bg-white/60'
+                  }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
             ))}
           </div>
         </div>
-
         {trending.length > 0 && (
           <div className="bg-gray-50 py-10">
             <div className="mx-auto max-w-6xl px-4">
@@ -431,11 +382,9 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
           </div>
         </div>
 
-        <div ref={counterRef} className="bg-black px-4 py-14 text-white">
+        <div className="bg-black px-4 py-14 text-white">
           <div className="mx-auto max-w-2xl space-y-4 text-center">
-            <p className="text-5xl font-black tracking-tight">
-              {animatedCount}+
-            </p>
+            <p className="text-5xl font-black tracking-tight">{displayCount}</p>
             <p className="text-lg font-semibold text-white/90">students already on CUReSell</p>
             <p className="mx-auto max-w-sm text-sm text-white/50">
               Join your campus community. Buy smarter. Sell faster. No OLX chaos.
