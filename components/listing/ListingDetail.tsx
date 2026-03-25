@@ -99,8 +99,22 @@ export function ListingDetail({ listing }: ListingDetailProps) {
   }, [actionMessage]);
 
   async function handleMarkSold() {
-    await supabase.from('listings').update({ status: 'sold' }).eq('id', listing.id);
-    router.refresh();
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('listings')
+        .update({ status: 'sold' })
+        .eq('id', listing.id)
+        .eq('seller_id', user.id);
+
+      if (error) throw error;
+
+      setActionMessage('Listing marked as sold');
+      router.refresh();
+    } catch {
+      setActionMessage('Could not mark listing as sold');
+    }
   }
 
   async function handleStartChat() {

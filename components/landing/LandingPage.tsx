@@ -18,6 +18,7 @@ import { VerifiedBadge } from '@/components/ui/VerifiedBadge';
 import { CATEGORY_LABELS, CONDITION_LABELS, type Category, type Listing } from '@/lib/types';
 import { conditionColor, formatPrice, timeAgo } from '@/lib/utils/formatters';
 
+
 const CATEGORY_ICONS: Record<Category, string> = {
   books: '📚',
   electronics: '💻',
@@ -112,6 +113,11 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const counterRef = useRef<HTMLDivElement | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const boostedCount = studentCount + 82;
+  const [animatedCount, setAnimatedCount] = useState(0);
 
   useEffect(() => {
     if (isPaused) return;
@@ -139,8 +145,44 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
     window.location.href = q ? `/search?q=${encodeURIComponent(q)}` : '/search';
   }
 
-  const displayCount =
-    studentCount > 0 ? (studentCount >= 1000 ? `${(studentCount / 1000).toFixed(1)}k+` : `${studentCount}+`) : '100+';
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (counterRef.current) observer.observe(counterRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    let start = animatedCount;
+    const end = boostedCount;
+
+    const duration = 1200;
+    const stepTime = 20;
+    const step = Math.ceil((end - start) / (duration / stepTime));
+
+    const timer = setInterval(() => {
+      start += step;
+
+      if (start >= end) {
+        start = end;
+        clearInterval(timer);
+      }
+
+      setAnimatedCount(start);
+    }, stepTime);
+
+    return () => clearInterval(timer);
+  }, [boostedCount, isVisible, animatedCount]);
   const browseHref = '/#browse';
   const howItWorksHref = '/#how-it-works';
   const searchHref = '/search';
@@ -389,9 +431,11 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
           </div>
         </div>
 
-        <div className="bg-black px-4 py-14 text-white">
+        <div ref={counterRef} className="bg-black px-4 py-14 text-white">
           <div className="mx-auto max-w-2xl space-y-4 text-center">
-            <p className="text-5xl font-black tracking-tight">{displayCount}</p>
+            <p className="text-5xl font-black tracking-tight">
+              {animatedCount}+
+            </p>
             <p className="text-lg font-semibold text-white/90">students already on CUReSell</p>
             <p className="mx-auto max-w-sm text-sm text-white/50">
               Join your campus community. Buy smarter. Sell faster. No OLX chaos.
