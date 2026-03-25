@@ -15,11 +15,14 @@ const nextConfig = {
         hostname: 'lh3.googleusercontent.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
     ],
   },
   webpack: (config, { dev }) => {
-    // Filesystem cache is noisy and flaky on this Windows + OneDrive workspace.
-    // Keeping Webpack cache in memory avoids PackFileCacheStrategy serialization overhead.
     config.cache = {
       type: dev ? 'memory' : false,
     };
