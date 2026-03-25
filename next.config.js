@@ -23,9 +23,9 @@ const nextConfig = {
     ],
   },
   webpack: (config, { dev }) => {
-    config.cache = {
-      type: dev ? 'memory' : false,
-    };
+    config.cache = dev
+  ? { type: 'memory' }
+  : false;
 
     return config;
   },
