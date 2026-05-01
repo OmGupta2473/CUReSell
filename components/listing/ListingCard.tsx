@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { ImageIcon } from 'lucide-react';
 import { VerifiedBadge } from '@/components/ui/VerifiedBadge';
 import { formatPrice, timeAgo, conditionColor } from '@/lib/utils/formatters';
 import { CONDITION_LABELS } from '@/lib/types';
@@ -14,48 +15,58 @@ export function ListingCard({ listing }: ListingCardProps) {
   const isSold = listing.status === 'sold';
 
   return (
-    <Link href={`/listing/${listing.id}`}>
-      <div className="cursor-pointer overflow-hidden rounded-xl border border-gray-100 bg-white transition-all hover:border-gray-200 hover:shadow-sm">
-        <div className="relative aspect-square bg-gray-100">
+    <Link
+      href={`/listing/${listing.id}`}
+      className="group block rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-400"
+      aria-label={`View listing: ${listing.title}`}
+    >
+      <article className="h-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-colors motion-safe:transition-all motion-safe:group-hover:-translate-y-0.5 group-hover:border-gray-300 group-hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:group-hover:border-gray-700">
+        <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
           {firstImage ? (
             <Image
               src={firstImage.url}
               alt={listing.title}
               fill
-              className={`object-cover ${isSold ? 'opacity-50' : ''}`}
+              className={`object-cover transition duration-300 motion-safe:group-hover:scale-105 ${
+                isSold ? 'opacity-50 grayscale' : ''
+              }`}
               sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-gray-300">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <path d="m21 15-5-5L5 21" />
-              </svg>
+            <div className="flex h-full w-full items-center justify-center text-gray-300 dark:text-gray-600">
+              <ImageIcon size={34} strokeWidth={1.5} />
             </div>
           )}
+
           {isSold && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="rounded-full bg-black/70 px-2.5 py-1 text-xs font-semibold text-white">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+              <span className="rounded-full bg-gray-950/85 px-3 py-1 text-xs font-bold text-white">
                 Sold
               </span>
             </div>
           )}
+
           {listing.is_negotiable && !isSold && (
-            <div className="absolute left-2 top-2">
-              <span className="rounded-full border border-gray-200 bg-white/90 px-1.5 py-0.5 text-[10px] font-medium text-gray-700">
-                Negotiable
-              </span>
-            </div>
+            <span className="absolute left-2 top-2 rounded-full border border-white/80 bg-white/90 px-2 py-1 text-[10px] font-bold text-gray-700 shadow-sm backdrop-blur dark:border-gray-700 dark:bg-gray-950/80 dark:text-gray-200">
+              Negotiable
+            </span>
           )}
         </div>
-        <div className="space-y-1 p-2.5">
-          <p className="text-sm font-semibold text-gray-900">{formatPrice(listing.price)}</p>
-          <p className="truncate text-sm leading-tight text-gray-600">{listing.title}</p>
-          <div className="flex items-center justify-between pt-0.5">
-            <div className="flex items-center gap-1.5">
+
+        <div className="space-y-2 p-3">
+          <div className="space-y-1">
+            <p className="text-base font-black tracking-tight text-gray-950 dark:text-white">
+              {formatPrice(listing.price)}
+            </p>
+            <p className="line-clamp-2 min-h-[2.25rem] text-sm leading-snug text-gray-600 dark:text-gray-300">
+              {listing.title}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <div className="flex min-w-0 items-center gap-1.5">
               <span
-                className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${conditionColor(
+                className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-bold ${conditionColor(
                   listing.condition
                 )}`}
               >
@@ -63,10 +74,12 @@ export function ListingCard({ listing }: ListingCardProps) {
               </span>
               {listing.profiles?.is_cu_verified && <VerifiedBadge size="sm" />}
             </div>
-            <span className="text-[10px] text-gray-400">{timeAgo(listing.created_at)}</span>
+            <span className="shrink-0 text-[11px] font-medium text-gray-400">
+              {timeAgo(listing.created_at)}
+            </span>
           </div>
         </div>
-      </div>
+      </article>
     </Link>
   );
 }

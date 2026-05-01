@@ -2,7 +2,9 @@
 
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { MailCheck, ShieldCheck } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
 
 function VerifyPageContent() {
   const [otp, setOtp] = useState(['', '', '', '', '', '', '', '']);
@@ -18,7 +20,6 @@ function VerifyPageContent() {
   const nextPath = searchParams.get('next') || '/';
   const supabase = createClient();
 
-  // Validate CU email on mount
   useEffect(() => {
     if (email && !email.endsWith('@cuchd.in')) {
       setEmailError('Only Chandigarh University email addresses are allowed.');
@@ -26,7 +27,6 @@ function VerifyPageContent() {
     inputRefs.current[0]?.focus();
   }, [email]);
 
-  // Handle resend cooldown
   useEffect(() => {
     if (resentCooldown > 0) {
       const timer = setTimeout(() => setResentCooldown(resentCooldown - 1), 1000);
@@ -41,19 +41,16 @@ function VerifyPageContent() {
     setOtp(newOtp);
     setError('');
 
-    // Auto-move to next box
     if (value && index < 7) {
       inputRefs.current[index + 1]?.focus();
     }
 
-    // Auto-verify when all 8 digits are filled
     if (newOtp[index] && index === 7 && newOtp.every((digit) => digit !== '')) {
       verifyOtp(newOtp);
     }
   }
 
   function handleKeyDown(index: number, e: React.KeyboardEvent) {
-    // Backspace: go to previous box
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -72,11 +69,9 @@ function VerifyPageContent() {
       setOtp(newOtp);
       setError('');
 
-      // Focus last filled box or next empty box
       const lastIndex = Math.min(digits.length - 1, 7);
       inputRefs.current[lastIndex]?.focus();
 
-      // Auto-verify if all 8 digits are now filled
       if (newOtp.every((digit) => digit !== '')) {
         verifyOtp(newOtp);
       }
@@ -95,7 +90,6 @@ function VerifyPageContent() {
     setError('');
 
     try {
-      // Verify OTP with Supabase
       const { data, error: verifyError } = await supabase.auth.verifyOtp({
         email,
         token,
@@ -110,7 +104,6 @@ function VerifyPageContent() {
         return;
       }
 
-      // Update profile with is_cu_verified = true
       if (data.user?.id) {
         const { error: updateError } = await supabase
           .from('profiles')
@@ -119,16 +112,14 @@ function VerifyPageContent() {
 
         if (updateError) {
           console.error('Failed to update verification status:', updateError);
-          // Still proceed even if this fails - user is authenticated
         }
       }
 
-      // Redirect
       const safeNextPath =
         nextPath.startsWith('/') && !nextPath.startsWith('//') ? nextPath : '/';
       router.push(safeNextPath);
       router.refresh();
-    } catch (err) {
+    } catch {
       setError('An error occurred. Please try again.');
       setLoading(false);
     }
@@ -165,47 +156,41 @@ function VerifyPageContent() {
 
   if (emailError) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-        <div className="w-full max-w-sm space-y-6 rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
-          <div className="text-center">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-              <span className="text-xl">❌</span>
-            </div>
-            <h1 className="text-xl font-semibold text-gray-900">Email Not Allowed</h1>
-            <p className="mt-2 text-sm text-red-600">{emailError}</p>
-            <p className="mt-3 text-xs text-gray-500">
-              Please use your Chandigarh University email address (ending with @cuchd.in)
-            </p>
-          </div>
-          <button
-            onClick={() => router.push('/login')}
-            className="w-full h-11 rounded-xl bg-black text-white font-medium hover:bg-gray-800 transition-colors"
-          >
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="w-full max-w-sm rounded-lg border border-red-200 bg-white p-6 text-center shadow-sm dark:border-red-900/60 dark:bg-gray-900">
+          <ShieldCheck className="mx-auto text-red-500" size={34} />
+          <h1 className="mt-4 text-xl font-black text-gray-950 dark:text-white">Email not allowed</h1>
+          <p className="mt-2 text-sm leading-6 text-red-600 dark:text-red-300">{emailError}</p>
+          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+            Please use your Chandigarh University email address ending with @cuchd.in.
+          </p>
+          <Button onClick={() => router.push('/login')} variant="primary" className="mt-5 w-full">
             Go back to login
-          </button>
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-sm space-y-6 rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+    <div className="flex min-h-screen items-center justify-center p-4">
+      <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <div className="text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
-            <span className="text-xl">📧</span>
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <MailCheck size={24} />
           </div>
-          <h1 className="text-xl font-semibold text-gray-900">Check your email</h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <h1 className="mt-4 text-2xl font-black tracking-tight text-gray-950 dark:text-white">
+            Check your email
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">
             We sent an 8-digit verification code to
             <br />
-            <span className="font-medium text-gray-700">{email}</span>
+            <span className="font-bold text-gray-800 dark:text-gray-200">{email}</span>
           </p>
         </div>
 
-        <form onSubmit={handleVerify} className="space-y-5">
-          {/* Apple-style OTP input boxes */}
-          <div className="flex justify-center gap-2">
+        <form onSubmit={handleVerify} className="mt-6 space-y-5">
+          <div className="grid grid-cols-8 gap-1.5 sm:gap-2">
             {otp.map((digit, i) => (
               <input
                 key={i}
@@ -220,48 +205,39 @@ function VerifyPageContent() {
                 onKeyDown={(e) => handleKeyDown(i, e)}
                 onPaste={handlePaste}
                 disabled={loading}
-                placeholder="•"
-                className={`h-14 w-12 rounded-xl border-2 text-center text-2xl font-bold transition-all ${
+                aria-label={`Verification digit ${i + 1}`}
+                className={`h-12 rounded-lg border text-center text-xl font-black transition-all ${
                   digit
-                    ? 'border-black bg-black text-white'
-                    : 'border-gray-200 bg-gray-50 text-gray-900'
-                } ${
-                  loading ? 'cursor-not-allowed opacity-50' : 'focus:border-black focus:outline-none'
-                }`}
+                    ? 'border-gray-950 bg-gray-950 text-white dark:border-white dark:bg-white dark:text-gray-950'
+                    : 'border-gray-200 bg-gray-50 text-gray-950 dark:border-gray-800 dark:bg-gray-950 dark:text-white'
+                } ${loading ? 'cursor-not-allowed opacity-50' : 'focus:border-teal-400 focus:outline-none focus:ring-4 focus:ring-teal-100 dark:focus:ring-teal-950'}`}
               />
             ))}
           </div>
 
-          {error && <p className="text-center text-sm text-red-500 font-medium">{error}</p>}
+          {error && <p className="text-center text-sm font-semibold text-red-500">{error}</p>}
 
-          <button
+          <Button
             type="submit"
             disabled={loading || otp.join('').length < 8}
-            className="h-11 w-full rounded-xl bg-black text-sm font-semibold text-white transition-all hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+            variant="primary"
+            size="lg"
+            className="w-full"
           >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Verifying…
-              </span>
-            ) : otp.join('').length === 8 ? (
-              'Verify code'
-            ) : (
-              `Enter code (${otp.filter((d) => d).length}/8)`
-            )}
-          </button>
+            {loading ? 'Verifying...' : otp.join('').length === 8 ? 'Verify code' : `Enter code (${otp.filter((d) => d).length}/8)`}
+          </Button>
         </form>
 
-        <div className="space-y-3 border-t border-gray-100 pt-4">
+        <div className="mt-5 space-y-3 border-t border-gray-200 pt-4 text-center dark:border-gray-800">
           <button
             onClick={handleResend}
             disabled={loading || resentCooldown > 0 || resent}
-            className="w-full text-sm text-gray-600 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 transition-colors font-medium"
+            className="text-sm font-bold text-gray-600 transition-colors hover:text-gray-950 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:text-white"
           >
             {resentCooldown > 0
               ? `Resend code in ${resentCooldown}s`
               : resent
-                ? 'Code sent! Check your inbox.'
+                ? 'Code sent. Check your inbox.'
                 : "Didn't get a code? Resend"}
           </button>
 
@@ -270,16 +246,10 @@ function VerifyPageContent() {
               router.push(`/login?next=${encodeURIComponent(nextPath || '/')}`)
             }
             disabled={loading}
-            className="w-full text-xs text-gray-400 hover:text-gray-600 disabled:cursor-not-allowed transition-colors"
+            className="block w-full text-xs font-semibold text-gray-400 transition-colors hover:text-gray-600 disabled:cursor-not-allowed dark:hover:text-gray-200"
           >
             Wrong email? Go back
           </button>
-        </div>
-
-        <div className="rounded-lg bg-blue-50 p-3 text-center">
-          <p className="text-xs text-blue-700">
-            ✓ CU email verification gives you a student badge on your profile
-          </p>
         </div>
       </div>
     </div>
@@ -288,7 +258,7 @@ function VerifyPageContent() {
 
 export default function VerifyPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[rgb(var(--background))]" />}>
       <VerifyPageContent />
     </Suspense>
   );

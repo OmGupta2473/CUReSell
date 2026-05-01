@@ -41,16 +41,27 @@ export default async function EditListingPage({
   }
 
   return (
-    <div className="mx-auto max-w-lg">
-      <div className="sticky top-14 z-10 mb-6 flex items-center gap-3 bg-gray-50 py-3">
-        <Link
-          href={`/listing/${params.id}`}
-          className="-ml-2 rounded-xl p-2 transition-colors hover:bg-gray-100"
-        >
-          <ArrowLeft size={20} className="text-gray-600" />
-        </Link>
-        <h1 className="text-lg font-semibold">Edit listing</h1>
+    <div className="mx-auto max-w-3xl space-y-5">
+      <div className="sticky top-16 z-20 -mx-4 border-b border-gray-200 bg-[rgb(var(--background))]/95 px-4 py-3 backdrop-blur-xl dark:border-gray-800 md:-mx-6 md:px-6">
+        <div className="mx-auto flex max-w-3xl items-center gap-3">
+          <Link
+            href={`/listing/${params.id}`}
+            className="-ml-2 inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-950 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
+            aria-label="Back to listing"
+          >
+            <ArrowLeft size={20} />
+          </Link>
+          <div>
+            <h1 className="text-lg font-black tracking-tight text-gray-950 dark:text-white">
+              Edit listing
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Update details, photos, price, and availability.
+            </p>
+          </div>
+        </div>
       </div>
+
       <ListingForm mode="edit" initialListing={listing} />
     </div>
   );

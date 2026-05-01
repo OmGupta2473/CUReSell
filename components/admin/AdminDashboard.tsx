@@ -171,61 +171,61 @@ export function AdminDashboard({
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(253,186,116,0.24),_transparent_35%),linear-gradient(180deg,_#fff7ed_0%,_#f8fafc_28%,_#f8fafc_100%)]">
+    <div className="min-h-screen bg-[rgb(var(--background))]">
       <div className="mx-auto max-w-6xl px-4 py-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="space-y-3">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white/80 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-orange-300"
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
             >
               <ArrowLeft size={15} />
               Back to marketplace
             </Link>
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-white">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
                 <Shield size={14} />
                 Admin dashboard
               </div>
-              <h1 className="text-3xl font-black tracking-tight text-gray-900">
+              <h1 className="text-3xl font-black tracking-tight text-gray-950 dark:text-white">
                 Campus moderation, all in one place.
               </h1>
-              <p className="max-w-2xl text-sm leading-6 text-gray-600">
+              <p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
                 Review flagged listings, resolve reports, and keep the CUReSell marketplace trustworthy for Chandigarh University students.
               </p>
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-white/80 bg-white/90 px-5 py-4 shadow-sm">
+          <div className="rounded-lg border border-gray-200 bg-white px-5 py-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <p className="text-xs uppercase tracking-[0.22em] text-gray-400">Signed in as</p>
             <p className="mt-2 text-lg font-semibold text-gray-900">{adminName}</p>
-            <p className="mt-1 text-sm text-orange-700">
+            <p className="mt-1 text-sm font-bold text-emerald-700 dark:text-emerald-300">
               {pendingReports.length} pending {pendingReports.length === 1 ? 'report' : 'reports'}
             </p>
           </div>
         </div>
 
         <div className="mt-8 grid gap-3 md:grid-cols-4">
-          <div className="rounded-[24px] border border-gray-100 bg-white p-5">
+          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <p className="text-xs uppercase tracking-[0.22em] text-gray-400">Users</p>
             <p className="mt-3 text-3xl font-semibold text-gray-900">{stats.users}</p>
           </div>
-          <div className="rounded-[24px] border border-gray-100 bg-white p-5">
+          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <p className="text-xs uppercase tracking-[0.22em] text-gray-400">Active listings</p>
             <p className="mt-3 text-3xl font-semibold text-gray-900">{stats.activeListings}</p>
           </div>
-          <div className="rounded-[24px] border border-gray-100 bg-white p-5">
+          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <p className="text-xs uppercase tracking-[0.22em] text-gray-400">Pending reports</p>
             <p className="mt-3 text-3xl font-semibold text-gray-900">{stats.pendingReports}</p>
           </div>
-          <div className="rounded-[24px] border border-gray-100 bg-white p-5">
+          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <p className="text-xs uppercase tracking-[0.22em] text-gray-400">Total reports</p>
             <p className="mt-3 text-3xl font-semibold text-gray-900">{stats.totalReports}</p>
           </div>
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
-          <section className="rounded-[28px] border border-gray-100 bg-white p-5 md:p-6">
+          <section className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 md:p-6">
             <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-lg font-semibold text-gray-900">Recent reports</p>
@@ -233,7 +233,7 @@ export function AdminDashboard({
                   Most recent flagged listings across the marketplace
                 </p>
               </div>
-              <div className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700">
+              <div className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-bold text-gray-600 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-300">
                 {reports.length} loaded
               </div>
             </div>
@@ -246,7 +246,7 @@ export function AdminDashboard({
 
             <div className="mt-5 space-y-4">
               {reports.length === 0 && (
-                <div className="rounded-[24px] border border-dashed border-gray-200 bg-gray-50 px-5 py-14 text-center">
+                <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-5 py-14 text-center dark:border-gray-700 dark:bg-gray-950">
                   <CheckCircle2 className="mx-auto text-emerald-600" size={28} />
                   <p className="mt-4 text-lg font-semibold text-gray-900">No reports right now</p>
                   <p className="mt-2 text-sm text-gray-500">
@@ -261,7 +261,7 @@ export function AdminDashboard({
                 return (
                   <article
                     key={report.id}
-                    className="rounded-[24px] border border-gray-100 bg-gray-50/70 p-4"
+                    className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-950"
                   >
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div className="space-y-3">
@@ -377,9 +377,9 @@ export function AdminDashboard({
           </section>
 
           <aside className="space-y-6">
-            <section className="rounded-[28px] border border-gray-100 bg-white p-5">
+            <section className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
               <div className="flex items-center gap-2">
-                <Clock3 size={18} className="text-orange-700" />
+                <Clock3 size={18} className="text-emerald-700 dark:text-emerald-300" />
                 <p className="text-lg font-semibold text-gray-900">Queue snapshot</p>
               </div>
               <div className="mt-5 space-y-3">
@@ -402,9 +402,9 @@ export function AdminDashboard({
               </div>
             </section>
 
-            <section className="rounded-[28px] border border-gray-100 bg-white p-5">
+            <section className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
               <div className="flex items-center gap-2">
-                <AlertTriangle size={18} className="text-orange-700" />
+                <AlertTriangle size={18} className="text-emerald-700 dark:text-emerald-300" />
                 <p className="text-lg font-semibold text-gray-900">Moderation guidance</p>
               </div>
               <div className="mt-4 space-y-3 text-sm leading-6 text-gray-600">

@@ -1,23 +1,102 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-html, body {
-  max-width: 100%;
-  overflow-x: hidden;
-}
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+@layer base {
+  :root {
+    color-scheme: light;
+    --background: 248 250 252;
+    --foreground: 17 24 39;
+    --surface: 255 255 255;
+    --surface-muted: 243 244 246;
+    --border: 229 231 235;
+    --muted: 107 114 128;
+    --brand: 16 185 129;
+    --brand-foreground: 6 78 59;
+    --accent: 244 63 94;
+    --focus: 20 184 166;
+  }
 
-html {
-  -webkit-tap-highlight-color: transparent;
-}
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --background: 9 13 18;
+      --foreground: 243 244 246;
+      --surface: 18 24 31;
+      --surface-muted: 31 41 55;
+      --border: 55 65 81;
+      --muted: 156 163 175;
+      --brand: 52 211 153;
+      --brand-foreground: 209 250 229;
+      --accent: 251 113 133;
+      --focus: 45 212 191;
+    }
+  }
 
-body {
-  min-height: 100vh;
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    min-height: 100vh;
+    background: rgb(var(--background));
+    color: rgb(var(--foreground));
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: rgb(var(--brand) / 0.22);
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--focus));
+    outline-offset: 3px;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    display: block;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
 @layer utilities {
@@ -27,5 +106,35 @@ body {
 
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .app-container {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 72rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .app-container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 320px;
+  }
+
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
   }
 }

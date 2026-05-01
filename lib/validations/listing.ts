@@ -14,8 +14,8 @@ export const listingSchema = z.object({
     .string()
     .min(1, 'Price is required')
     .regex(/^\d+$/, 'Enter a valid number')
-    .refine((val) => parseInt(val) >= 1, 'Price must be at least ₹1')
-    .refine((val) => parseInt(val) <= 100000, 'Price must be under ₹1,00,000'),
+    .refine((val) => parseInt(val) >= 1, 'Price must be at least Rs. 1')
+    .refine((val) => parseInt(val) <= 100000, 'Price must be under Rs. 1,00,000'),
   is_negotiable: z.boolean().default(false),
   category: z.enum(
     ['books', 'electronics', 'furniture', 'kitchen', 'clothes', 'cycles', 'sports', 'other'] as const,

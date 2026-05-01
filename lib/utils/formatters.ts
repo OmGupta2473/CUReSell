@@ -2,9 +2,9 @@ import type { Condition } from '@/lib/types';
 
 export function formatPrice(paise: number): string {
   const rupees = paise / 100;
-  if (rupees >= 100000) return `₹${(rupees / 100000).toFixed(1)}L`;
-  if (rupees >= 1000) return `₹${(rupees / 1000).toFixed(1)}k`;
-  return `₹${rupees.toLocaleString('en-IN')}`;
+  if (rupees >= 100000) return `Rs. ${(rupees / 100000).toFixed(1)}L`;
+  if (rupees >= 1000) return `Rs. ${(rupees / 1000).toFixed(1)}k`;
+  return `Rs. ${rupees.toLocaleString('en-IN')}`;
 }
 
 export function timeAgo(dateString: string): string {
@@ -20,13 +20,13 @@ export function timeAgo(dateString: string): string {
 
 export function conditionColor(condition: Condition | string): string {
   const map: Record<string, string> = {
-    like_new: 'bg-green-50 text-green-700',
-    good: 'bg-blue-50 text-blue-700',
-    fair: 'bg-orange-50 text-orange-700',
+    like_new: 'bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-300',
+    good: 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300',
+    fair: 'bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-300',
   };
-  return map[condition] ?? 'bg-gray-100 text-gray-600';
+  return map[condition] ?? 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300';
 }
 
 export function formatFullPrice(paise: number): string {
-  return `₹${(paise / 100).toLocaleString('en-IN')}`;
+  return `Rs. ${(paise / 100).toLocaleString('en-IN')}`;
 }

@@ -1,4 +1,5 @@
 import { Navbar } from '@/components/layout/Navbar';
+import { BottomNav } from '@/components/layout/BottomNav';
 
 import { createClient } from '@/lib/supabase/server';
 import { ProfileSetupModal } from '@/components/auth/ProfileSetupModal';
@@ -13,28 +14,33 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name, auth_provider')
+      .select('full_name, auth_provider, is_cu_verified')
       .eq('id', user.id)
       .single();
 
-    const name = profile?.full_name ?? '';
-    const isGoogleUser = profile?.auth_provider === 'google';
+    // Check if user is from Google provider (either from auth or app_metadata)
+    const provider = user.app_metadata?.provider || profile?.auth_provider;
+    const isGoogleUser = provider === 'google';
+    const isCUVerified = profile?.is_cu_verified ?? false;
 
-    const nameIsEmailPrefix = name && !name.includes(' ') && /^[0-9]/.test(name);
-    needsProfileSetup = !name || (!isGoogleUser && nameIsEmailPrefix);
+    // Skip ProfileSetupModal if:
+    // 1. User is a Google user (full_name auto-set by Google OAuth)
+    // 2. User is CU verified (already completed verification)
+    // 3. User has a full_name already
+    needsProfileSetup = !isGoogleUser && !isCUVerified && !profile?.full_name;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[rgb(var(--background))]">
       {needsProfileSetup && user ? (
         <ProfileSetupModal userId={user.id} email={user.email ?? ''} />
       ) : (
         <>
           <Navbar />
-          <main className="max-w-5xl mx-auto px-3 pt-16 pb-20 md:pb-6">
+          <main className="app-container pt-20 pb-24 md:pb-10">
             {children}
           </main>
-          {/* <BottomNav /> */}
+          <BottomNav />
         </>
       )}
     </div>

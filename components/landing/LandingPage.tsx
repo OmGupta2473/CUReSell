@@ -13,6 +13,8 @@ import {
   Search,
   ShoppingBag,
   Sparkles,
+  Home,
+  User,
 } from 'lucide-react';
 import { VerifiedBadge } from '@/components/ui/VerifiedBadge';
 import { CATEGORY_LABELS, CONDITION_LABELS, type Category, type Listing } from '@/lib/types';
@@ -120,6 +122,7 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
   const [animatedCount, setAnimatedCount] = useState(0);
 
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (isPaused) return;
 
     intervalRef.current = setInterval(() => {
@@ -163,7 +166,7 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
   useEffect(() => {
     if (!isVisible) return;
 
-    let start = animatedCount;
+    let start = 0;
     const end = boostedCount;
 
     const duration = 1200;
@@ -183,8 +186,6 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
 
     return () => clearInterval(timer);
   }, [boostedCount, isVisible]);
-  const browseHref = '/#browse';
-  const howItWorksHref = '/#how-it-works';
   const searchHref = '/search';
   const loginHref = '/login';
   const sellHref = isAuthenticated ? '/listing/new' : '/login?next=%2Flisting%2Fnew';
@@ -287,8 +288,8 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
                 key={i}
                 onClick={() => goTo(i)}
                 className={`rounded-full transition-all duration-300 ${i === currentSlide
-                    ? 'h-2 w-6 bg-white'
-                    : 'h-2 w-2 bg-white/40 hover:bg-white/60'
+                  ? 'h-2 w-6 bg-white'
+                  : 'h-2 w-2 bg-white/40 hover:bg-white/60'
                   }`}
                 aria-label={`Go to slide ${i + 1}`}
               />
@@ -435,6 +436,54 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
             </Link>
           </div>
         </div>
+
+        {/* Mobile Navigation */}
+        <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white/95 shadow-[0_-12px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl md:hidden">
+          <div className="grid h-16 grid-cols-4 items-center px-1">
+            <Link
+              href={searchHref}
+              className="flex flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium text-gray-500 transition-colors hover:text-gray-950"
+            >
+              <span className="flex h-8 w-10 items-center justify-center rounded-lg">
+                <Search size={20} strokeWidth={1.8} />
+              </span>
+              <span>Search</span>
+            </Link>
+
+            <Link
+              href="/feed"
+              className="flex flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium text-gray-500 transition-colors hover:text-gray-950"
+            >
+              <span className="flex h-8 w-10 items-center justify-center rounded-lg">
+                <Home size={20} strokeWidth={1.8} />
+              </span>
+              <span>Feed</span>
+            </Link>
+
+            <Link
+              href="/messages"
+              className="flex flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium text-gray-500 transition-colors hover:text-gray-950"
+            >
+              <span className="flex h-8 w-10 items-center justify-center rounded-lg">
+                <MessageCircle size={20} strokeWidth={1.8} />
+              </span>
+              <span>Messages</span>
+            </Link>
+
+            <Link
+              href="/profile"
+              className="flex flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium text-gray-500 transition-colors hover:text-gray-950"
+            >
+              <span className="flex h-8 w-10 items-center justify-center rounded-lg">
+                <User size={20} strokeWidth={1.8} />
+              </span>
+              <span>Profile</span>
+            </Link>
+          </div>
+        </nav>
+
+        {/* Add bottom padding on mobile for nav */}
+        <div className="h-16 md:hidden"></div>
 
         <footer className="border-t border-gray-100 bg-gray-50 px-4 py-8">
           <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">

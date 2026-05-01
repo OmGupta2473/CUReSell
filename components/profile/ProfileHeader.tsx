@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { LogOut, Edit2, Check, X } from 'lucide-react';
+import { Check, Edit2, LogOut, MailCheck, MapPin, ShieldCheck, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import { ListingGrid } from '@/components/listing/ListingGrid';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { UserListings } from '@/components/profile/UserListings';
 import { VerifiedBadge } from '@/components/ui/VerifiedBadge';
 import type { Profile, Listing } from '@/lib/types';
 
@@ -30,6 +32,7 @@ export function ProfileView({ profile, listings, isOwnProfile }: ProfileViewProp
 
   const activeListings = listings.filter((l) => l.status === 'active');
   const soldListings = listings.filter((l) => l.status === 'sold');
+  const firstName = profile?.full_name?.split(' ')[0] ?? 'Student';
 
   async function handleSave() {
     if (!profile || !name.trim()) return;
@@ -55,186 +58,194 @@ export function ProfileView({ profile, listings, isOwnProfile }: ProfileViewProp
   }
 
   return (
-    <div className="max-w-lg mx-auto space-y-6">
-      <div className="bg-white rounded-2xl border border-gray-100 p-5">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
-              {profile?.avatar_url ? (
-                <Image src={profile.avatar_url} alt="" width={56} height={56} className="object-cover" />
-              ) : (
-                <span className="text-xl font-bold text-gray-500">
-                  {profile?.full_name?.charAt(0).toUpperCase() ?? '?'}
-                </span>
-              )}
+    <div className="mx-auto max-w-5xl space-y-6">
+      <section className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <div className="h-24 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
+        <div className="p-5 md:p-6">
+          <div className="-mt-14 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+              <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-lg border-4 border-white bg-gray-100 shadow-sm dark:border-gray-900 dark:bg-gray-800">
+                {profile?.avatar_url ? (
+                  <Image
+                    src={profile.avatar_url}
+                    alt={profile.full_name}
+                    width={96}
+                    height={96}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="text-3xl font-black text-gray-500 dark:text-gray-300">
+                    {profile?.full_name?.charAt(0).toUpperCase() ?? '?'}
+                  </span>
+                )}
+              </div>
+
+              <div className="min-w-0 space-y-2">
+                {editing ? (
+                  <Input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    className="max-w-xs font-bold"
+                  />
+                ) : (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h1 className="truncate text-2xl font-black tracking-tight text-gray-950 dark:text-white">
+                      {profile?.full_name}
+                    </h1>
+                    {profile?.is_cu_verified && <VerifiedBadge size="sm" showLabel />}
+                  </div>
+                )}
+                <p className="text-sm text-gray-500 dark:text-gray-400">{profile?.email}</p>
+              </div>
             </div>
-            <div>
-              {editing ? (
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="font-semibold text-base border-b border-gray-300 focus:outline-none focus:border-black w-40"
-                  placeholder="Your name"
-                />
-              ) : (
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <p className="font-semibold text-base">{profile?.full_name}</p>
-                  {profile?.is_cu_verified && <VerifiedBadge size="sm" showLabel />}
-                </div>
-              )}
-              <p className="text-xs text-gray-400 mt-0.5">{profile?.email}</p>
-            </div>
+
+            {isOwnProfile && (
+              <div className="flex items-center gap-2">
+                {editing ? (
+                  <>
+                    <Button onClick={handleSave} disabled={saving} variant="primary">
+                      <Check size={16} />
+                      {saving ? 'Saving' : 'Save'}
+                    </Button>
+                    <Button onClick={() => setEditing(false)}>
+                      <X size={16} />
+                      Cancel
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button onClick={() => setEditing(true)}>
+                      <Edit2 size={16} />
+                      Edit
+                    </Button>
+                    <Button onClick={handleSignOut} variant="ghost">
+                      <LogOut size={16} />
+                      Sign out
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
-          {isOwnProfile && (
-            <div className="flex items-center gap-1">
-              {editing ? (
-                <>
-                  <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="p-2 rounded-lg bg-black text-white hover:bg-gray-800 transition-colors"
-                  >
-                    <Check size={16} />
-                  </button>
-                  <button
-                    onClick={() => setEditing(false)}
-                    className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <X size={16} className="text-gray-500" />
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => setEditing(true)}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+
+          {editing ? (
+            <div className="mt-6 grid gap-3 md:grid-cols-3">
+              <label className="space-y-1.5">
+                <span className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
+                  Department
+                </span>
+                <select
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  className="h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-teal-400 focus:ring-4 focus:ring-teal-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-teal-950"
                 >
-                  <Edit2 size={16} className="text-gray-500" />
-                </button>
+                  <option value="">Select department</option>
+                  {DEPARTMENTS.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="space-y-1.5">
+                <span className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
+                  Year of study
+                </span>
+                <select
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                  className="h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-teal-400 focus:ring-4 focus:ring-teal-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-teal-950"
+                >
+                  <option value="">Select year</option>
+                  {YEARS.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="space-y-1.5">
+                <span className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
+                  Hostel / Block
+                </span>
+                <Input
+                  value={hostel}
+                  onChange={(e) => setHostel(e.target.value)}
+                  placeholder="e.g. Block C, Girls Hostel"
+                />
+              </label>
+            </div>
+          ) : (
+            <div className="mt-6 flex flex-wrap gap-2">
+              {profile?.department && <ProfilePill>{profile.department}</ProfilePill>}
+              {profile?.year_of_study && <ProfilePill>{profile.year_of_study}</ProfilePill>}
+              {profile?.hostel_block && (
+                <ProfilePill>
+                  <MapPin size={13} />
+                  {profile.hostel_block}
+                </ProfilePill>
+              )}
+              {!profile?.department &&
+                !profile?.year_of_study &&
+                !profile?.hostel_block &&
+                isOwnProfile && (
+                  <button
+                    type="button"
+                    onClick={() => setEditing(true)}
+                    className="rounded-lg border border-dashed border-gray-300 px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:border-gray-400 hover:text-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white"
+                  >
+                    Add department and hostel
+                  </button>
+                )}
+            </div>
+          )}
+
+          <div className="mt-6 grid gap-3 border-t border-gray-200 pt-5 dark:border-gray-800 sm:grid-cols-3">
+            <ProfileStat label="Active" value={activeListings.length} />
+            <ProfileStat label="Sold" value={soldListings.length} />
+            <ProfileStat label="Total listings" value={listings.length} />
+          </div>
+
+          {isOwnProfile && (
+            <div className="mt-5 border-t border-gray-200 pt-5 dark:border-gray-800">
+              {profile?.is_cu_verified ? (
+                <div className="flex flex-wrap items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+                  <VerifiedBadge size="md" showLabel />
+                  <span className="text-xs font-medium">{profile.cu_email}</span>
+                </div>
+              ) : (
+                <VerifyWithCUMail userId={profile?.id ?? ''} />
               )}
             </div>
           )}
         </div>
+      </section>
 
-        {editing ? (
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">Department</label>
-              <select
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                className="w-full h-9 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
-              >
-                <option value="">Select department</option>
-                {DEPARTMENTS.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">Year of study</label>
-              <select
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-                className="w-full h-9 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
-              >
-                <option value="">Select year</option>
-                {YEARS.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">Hostel / Block</label>
-              <input
-                value={hostel}
-                onChange={(e) => setHostel(e.target.value)}
-                placeholder="e.g. Block C, Girls Hostel"
-                className="w-full h-9 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {profile?.department && (
-              <span className="text-xs px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full">
-                {profile.department}
-              </span>
-            )}
-            {profile?.year_of_study && (
-              <span className="text-xs px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full">
-                {profile.year_of_study}
-              </span>
-            )}
-            {profile?.hostel_block && (
-              <span className="text-xs px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full">
-                {profile.hostel_block}
-              </span>
-            )}
-            {!profile?.department &&
-              !profile?.year_of_study &&
-              !profile?.hostel_block &&
-              isOwnProfile && (
-                <button
-                  onClick={() => setEditing(true)}
-                  className="text-xs text-gray-400 hover:text-gray-600"
-                >
-                  + Add your department and hostel
-                </button>
-              )}
-          </div>
-        )}
+      <UserListings
+        listings={listings}
+        title={isOwnProfile ? 'My listings' : `${firstName}'s listings`}
+        allowFiltering={isOwnProfile}
+      />
+    </div>
+  );
+}
 
-        <div className="flex gap-4 mt-4 pt-4 border-t border-gray-50">
-          <div className="text-center">
-            <p className="font-semibold text-sm">{activeListings.length}</p>
-            <p className="text-xs text-gray-400">Active</p>
-          </div>
-          <div className="text-center">
-            <p className="font-semibold text-sm">{soldListings.length}</p>
-            <p className="text-xs text-gray-400">Sold</p>
-          </div>
-        </div>
+function ProfilePill({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm font-bold text-gray-600 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-300">
+      {children}
+    </span>
+  );
+}
 
-        {isOwnProfile && (
-          <div className="mt-4 pt-4 border-t border-gray-50">
-            {profile?.is_cu_verified ? (
-              <div className="flex items-center gap-2">
-                <VerifiedBadge size="md" showLabel />
-                <span className="text-xs text-gray-400">{profile.cu_email}</span>
-              </div>
-            ) : (
-              <VerifyWithCUMail userId={profile?.id ?? ''} />
-            )}
-          </div>
-        )}
-
-        {isOwnProfile && !editing && (
-          <button
-            onClick={handleSignOut}
-            className="mt-4 flex items-center gap-2 text-sm text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <LogOut size={14} />
-            Sign out
-          </button>
-        )}
-      </div>
-
-      {listings.length > 0 ? (
-        <div>
-          <h2 className="text-sm font-semibold text-gray-700 mb-3">
-            {isOwnProfile ? 'My listings' : `${profile?.full_name?.split(' ')[0]}'s listings`}
-          </h2>
-          <ListingGrid listings={listings} />
-        </div>
-      ) : (
-        <div className="text-center py-8">
-          <p className="text-sm text-gray-400">No listings yet</p>
-        </div>
-      )}
+function ProfileStat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-950">
+      <p className="text-2xl font-black text-gray-950 dark:text-white">{value}</p>
+      <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-gray-400">{label}</p>
     </div>
   );
 }
@@ -253,14 +264,33 @@ function VerifyWithCUMail({ userId }: { userId: string }) {
 
   async function handleSendOTP(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.toLowerCase().endsWith(`@${DOMAIN}`)) {
+    const cuEmailLower = email.toLowerCase();
+    if (!cuEmailLower.endsWith(`@${DOMAIN}`)) {
       setError(`Must be a @${DOMAIN} address`);
       return;
     }
+
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id, email, is_cu_verified')
+      .eq('cu_email', cuEmailLower)
+      .maybeSingle();
+
+    if (existingProfile) {
+      if (existingProfile.id !== userId) {
+        setError('This CU email is already registered to another account');
+        return;
+      }
+      if (existingProfile.is_cu_verified) {
+        setError('Your account is already verified with this email');
+        return;
+      }
+    }
+
     setLoading(true);
     setError('');
     const { error } = await supabase.auth.signInWithOtp({
-      email: email.toLowerCase(),
+      email: cuEmailLower,
       options: { shouldCreateUser: false },
     });
     if (error) {
@@ -276,8 +306,10 @@ function VerifyWithCUMail({ userId }: { userId: string }) {
     e.preventDefault();
     setLoading(true);
     setError('');
+    const cuEmailLower = email.toLowerCase();
+
     const { error: otpError } = await supabase.auth.verifyOtp({
-      email: email.toLowerCase(),
+      email: cuEmailLower,
       token: otp.trim(),
       type: 'email',
     });
@@ -291,7 +323,7 @@ function VerifyWithCUMail({ userId }: { userId: string }) {
       .from('profiles')
       .update({
         is_cu_verified: true,
-        cu_email: email.toLowerCase(),
+        cu_email: cuEmailLower,
       })
       .eq('id', userId);
 
@@ -306,11 +338,9 @@ function VerifyWithCUMail({ userId }: { userId: string }) {
 
   if (success) {
     return (
-      <div className="flex items-center gap-2 text-teal-600 text-sm">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-        CU Verified! Refreshing…
+      <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm font-bold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+        <Check size={16} />
+        CU Verified. Refreshing...
       </div>
     );
   }
@@ -318,58 +348,66 @@ function VerifyWithCUMail({ userId }: { userId: string }) {
   if (!showForm) {
     return (
       <button
+        type="button"
         onClick={() => setShowForm(true)}
-        className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+        className="flex w-full items-center gap-3 rounded-lg border border-dashed border-emerald-300 bg-emerald-50/60 p-4 text-left transition-colors hover:bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/20 dark:hover:bg-emerald-950/40"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-          <polyline points="22 4 12 14.01 9 11.01" />
-        </svg>
-        Verify as CU student to get verified badge
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-emerald-700 shadow-sm dark:bg-gray-900 dark:text-emerald-300">
+          <ShieldCheck size={20} />
+        </span>
+        <span>
+          <span className="block text-sm font-black text-gray-950 dark:text-white">
+            Verify as a CU student
+          </span>
+          <span className="mt-1 block text-xs leading-5 text-gray-500 dark:text-gray-400">
+            Use your CUMail to show a verified badge on your profile and listings.
+          </span>
+        </span>
       </button>
     );
   }
 
   return (
-    <div className="space-y-3">
-      <p className="text-xs font-medium text-gray-600">Verify with your CUMail</p>
+    <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-950">
+      <div className="flex items-start gap-3">
+        <MailCheck className="mt-0.5 text-emerald-700 dark:text-emerald-300" size={18} />
+        <div>
+          <p className="text-sm font-black text-gray-950 dark:text-white">Verify with your CUMail</p>
+          <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">
+            Enter your college email and confirm the code sent to your inbox.
+          </p>
+        </div>
+      </div>
+
       {step === 'input' ? (
-        <form onSubmit={handleSendOTP} className="flex gap-2">
-          <input
+        <form onSubmit={handleSendOTP} className="flex flex-col gap-2 sm:flex-row">
+          <Input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={`you@${DOMAIN}`}
-            className="flex-1 h-9 px-3 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-black"
+            className="text-sm"
           />
-          <button
-            type="submit"
-            disabled={loading || !email}
-            className="h-9 px-3 bg-black text-white text-xs rounded-lg disabled:opacity-50 hover:bg-gray-800 transition-colors"
-          >
-            {loading ? '…' : 'Send code'}
-          </button>
+          <Button type="submit" disabled={loading || !email} variant="primary">
+            {loading ? 'Sending...' : 'Send code'}
+          </Button>
         </form>
       ) : (
-        <form onSubmit={handleVerifyOTP} className="flex gap-2">
-          <input
+        <form onSubmit={handleVerifyOTP} className="flex flex-col gap-2 sm:flex-row">
+          <Input
             type="text"
             inputMode="numeric"
             value={otp}
             onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))}
             placeholder="8-digit code"
-            className="flex-1 h-9 px-3 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-black"
+            className="text-sm"
           />
-          <button
-            type="submit"
-            disabled={loading || otp.length < 8}
-            className="h-9 px-3 bg-black text-white text-xs rounded-lg disabled:opacity-50 hover:bg-gray-800 transition-colors"
-          >
-            {loading ? '…' : 'Verify'}
-          </button>
+          <Button type="submit" disabled={loading || otp.length < 8} variant="primary">
+            {loading ? 'Verifying...' : 'Verify'}
+          </Button>
         </form>
       )}
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-xs font-semibold text-red-500">{error}</p>}
     </div>
   );
 }

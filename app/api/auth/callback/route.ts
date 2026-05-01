@@ -1,10 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
+import { getSafeRedirectPath } from '@/lib/utils/safeRedirect';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/';
+  const next = getSafeRedirectPath(searchParams.get('next'), '/');
   const providerError = searchParams.get('error_description') ?? searchParams.get('error');
 
   if (code) {
@@ -31,13 +32,20 @@ export async function GET(request: Request) {
               ? metadata.picture
               : null;
 
+        const profileUpdates: {
+          full_name?: string;
+          avatar_url?: string;
+          auth_provider: string | null;
+        } = {
+          auth_provider: provider,
+        };
+
+        if (fullName) profileUpdates.full_name = fullName;
+        if (avatarUrl) profileUpdates.avatar_url = avatarUrl;
+
         await supabase
           .from('profiles')
-          .update({
-            full_name: fullName ?? undefined,
-            avatar_url: avatarUrl ?? undefined,
-            auth_provider: provider,
-          })
+          .update(profileUpdates)
           .eq('id', user.id);
       }
 

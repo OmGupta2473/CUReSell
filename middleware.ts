@@ -1,18 +1,40 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { getSafeRedirectPath } from '@/lib/utils/safeRedirect';
 
-const PUBLIC_ROUTES = ['/', '/login', '/verify', '/api/auth/callback'];
+const PUBLIC_ROUTES = new Set(['/', '/login', '/verify']);
+const AUTH_ROUTES = new Set(['/login', '/verify']);
+const PUBLIC_API_PREFIXES = ['/api/auth'];
 
 function isPublicRoute(path: string) {
   return (
-    PUBLIC_ROUTES.includes(path) ||
+    PUBLIC_ROUTES.has(path) ||
     path === '/search' ||
     /^\/listing\/[^/]+$/.test(path)
   );
 }
 
+function isPublicAsset(path: string) {
+  return (
+    path.startsWith('/_next') ||
+    path === '/favicon.ico' ||
+    path === '/robots.txt' ||
+    path === '/sitemap.xml' ||
+    /\.[a-zA-Z0-9]+$/.test(path)
+  );
+}
+
+function isPublicApiRoute(path: string) {
+  return PUBLIC_API_PREFIXES.some((prefix) => path.startsWith(prefix));
+}
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
+  const path = request.nextUrl.pathname;
+
+  if (isPublicAsset(path)) {
+    return supabaseResponse;
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,20 +58,29 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const path = request.nextUrl.pathname;
 
-  const isPublicAsset =
-    path.startsWith('/_next') || path.startsWith('/api/auth') || path === '/favicon.ico';
-  if (isPublicAsset) return supabaseResponse;
-
-  // Signed-in users should not hit OTP verification directly.
-  if (user && path === '/verify') {
-    return NextResponse.redirect(new URL('/feed', request.url));
+  if (isPublicApiRoute(path)) {
+    return supabaseResponse;
   }
 
-  // Unauthenticated users going to protected routes -> send to login.
+  if (path.startsWith('/api/') && !user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  if (user && AUTH_ROUTES.has(path)) {
+    const next = getSafeRedirectPath(request.nextUrl.searchParams.get('next'), '/feed');
+    return NextResponse.redirect(new URL(next === '/' ? '/feed' : next, request.url));
+  }
+
   if (!user && !isPublicRoute(path)) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    const loginUrl = new URL('/login', request.url);
+    const next = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+
+    if (next !== '/') {
+      loginUrl.searchParams.set('next', next);
+    }
+
+    return NextResponse.redirect(loginUrl);
   }
 
   return supabaseResponse;

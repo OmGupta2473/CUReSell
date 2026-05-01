@@ -32,27 +32,27 @@ export function FeedControls({
   }
 
   return (
-    <div className="space-y-4 rounded-[28px] border border-slate-200/70 bg-white/95 p-4 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.45)] md:p-5">
+    <div className="space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-950">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900">
+          <p className="inline-flex items-center gap-2 text-sm font-black text-gray-950 dark:text-white">
             <SlidersHorizontal size={16} />
             Filter and sort
           </p>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             {typeof resultCount === 'number'
               ? `${resultCount} ${resultCount === 1 ? 'listing' : 'listings'} after filters`
               : 'Refine the feed with price and condition'}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
           {activeFilterCount > 0 && (
-            <span className="rounded-full bg-orange-50 px-3 py-1 font-medium text-orange-700">
+            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 font-bold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
               {activeFilterCount} active {activeFilterCount === 1 ? 'filter' : 'filters'}
             </span>
           )}
           {primaryLocationLabel && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-600">
+            <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1 font-bold text-gray-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300">
               <MapPin size={12} />
               Your area: {primaryLocationLabel}
             </span>
@@ -62,13 +62,13 @@ export function FeedControls({
 
       <div className="grid gap-3 md:grid-cols-1">
         <label className="space-y-1">
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+          <span className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
             Sort
           </span>
           <select
             value={filters.sort}
             onChange={(e) => update('sort', e.target.value as ListingSortOption)}
-            className="h-12 w-full rounded-2xl border border-gray-200 bg-gradient-to-b from-white to-gray-50 px-4 text-sm text-gray-700 outline-none transition focus:border-orange-200 focus:ring-2 focus:ring-orange-200"
+            className="h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-700 outline-none transition focus:border-teal-400 focus:ring-4 focus:ring-teal-100 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-teal-950"
           >
             {Object.entries(SORT_LABELS).map(([value, label]) => (
               <option key={value} value={value}>
@@ -80,15 +80,22 @@ export function FeedControls({
       </div>
 
       <div className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Condition</p>
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-hide">
+        <p id="condition-filter-label" className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
+          Condition
+        </p>
+        <div
+          className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 scrollbar-hide"
+          role="group"
+          aria-labelledby="condition-filter-label"
+        >
           <button
             type="button"
             onClick={() => update('condition', 'all')}
-            className={`flex-shrink-0 rounded-full border px-3.5 py-2 text-sm font-medium transition-all ${
+            aria-pressed={filters.condition === 'all'}
+            className={`tap-target flex-shrink-0 snap-start rounded-lg border px-3.5 py-2 text-sm font-bold transition-colors ${
               filters.condition === 'all'
-                ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
-                : 'border-gray-200 bg-white text-gray-600 hover:border-orange-200 hover:bg-orange-50/60'
+                ? 'border-gray-950 bg-gray-950 text-white dark:border-white dark:bg-white dark:text-gray-950'
+                : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800'
             }`}
           >
             All conditions
@@ -98,10 +105,11 @@ export function FeedControls({
               key={value}
               type="button"
               onClick={() => update('condition', filters.condition === value ? 'all' : value)}
-              className={`flex-shrink-0 rounded-full border px-3.5 py-2 text-sm font-medium transition-all ${
+              aria-pressed={filters.condition === value}
+              className={`tap-target flex-shrink-0 snap-start rounded-lg border px-3.5 py-2 text-sm font-bold transition-colors ${
                 filters.condition === value
-                  ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
-                  : 'border-gray-200 bg-white text-gray-600 hover:border-orange-200 hover:bg-orange-50/60'
+                  ? 'border-gray-950 bg-gray-950 text-white dark:border-white dark:bg-white dark:text-gray-950'
+                  : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800'
               }`}
             >
               {label}
