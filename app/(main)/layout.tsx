@@ -31,16 +31,16 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--background))]">
+    <div className="min-h-screen bg-[rgb(var(--background))] text-[rgb(var(--foreground))]">
       {needsProfileSetup && user ? (
         <ProfileSetupModal userId={user.id} email={user.email ?? ''} />
       ) : (
         <>
           <Navbar />
-          <main className="app-container pt-20 pb-24 md:pb-10">
+          <main className="app-container page-reveal relative z-10 pt-24 pb-28 md:pb-12">
             {children}
           </main>
-          <BottomNav />
+          <BottomNav initialSignedIn={Boolean(user)} />
         </>
       )}
     </div>

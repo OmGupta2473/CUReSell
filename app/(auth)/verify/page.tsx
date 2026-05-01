@@ -157,11 +157,11 @@ function VerifyPageContent() {
   if (emailError) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4">
-        <div className="w-full max-w-sm rounded-lg border border-red-200 bg-white p-6 text-center shadow-sm dark:border-red-900/60 dark:bg-gray-900">
+        <div className="glass-panel w-full max-w-sm rounded-[1.75rem] border border-red-400/20 p-6 text-center">
           <ShieldCheck className="mx-auto text-red-500" size={34} />
-          <h1 className="mt-4 text-xl font-black text-gray-950 dark:text-white">Email not allowed</h1>
-          <p className="mt-2 text-sm leading-6 text-red-600 dark:text-red-300">{emailError}</p>
-          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          <h1 className="mt-4 text-xl font-black text-white">Email not allowed</h1>
+          <p className="mt-2 text-sm leading-6 text-red-200">{emailError}</p>
+          <p className="mt-2 text-xs text-slate-400">
             Please use your Chandigarh University email address ending with @cuchd.in.
           </p>
           <Button onClick={() => router.push('/login')} variant="primary" className="mt-5 w-full">
@@ -174,18 +174,18 @@ function VerifyPageContent() {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div className="glass-panel page-reveal w-full max-w-md rounded-[1.9rem] p-6">
         <div className="text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.1] bg-white/[0.08] text-sky-100">
             <MailCheck size={24} />
           </div>
-          <h1 className="mt-4 text-2xl font-black tracking-tight text-gray-950 dark:text-white">
+          <h1 className="mt-4 text-2xl font-black tracking-tight text-white">
             Check your email
           </h1>
-          <p className="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">
+          <p className="mt-2 text-sm leading-6 text-slate-400">
             We sent an 8-digit verification code to
             <br />
-            <span className="font-bold text-gray-800 dark:text-gray-200">{email}</span>
+            <span className="font-bold text-slate-100">{email}</span>
           </p>
         </div>
 
@@ -208,9 +208,9 @@ function VerifyPageContent() {
                 aria-label={`Verification digit ${i + 1}`}
                 className={`h-12 rounded-lg border text-center text-xl font-black transition-all ${
                   digit
-                    ? 'border-gray-950 bg-gray-950 text-white dark:border-white dark:bg-white dark:text-gray-950'
-                    : 'border-gray-200 bg-gray-50 text-gray-950 dark:border-gray-800 dark:bg-gray-950 dark:text-white'
-                } ${loading ? 'cursor-not-allowed opacity-50' : 'focus:border-teal-400 focus:outline-none focus:ring-4 focus:ring-teal-100 dark:focus:ring-teal-950'}`}
+                    ? 'border-sky-300/20 bg-sky-400/[0.16] text-white'
+                    : 'border-white/[0.1] bg-white/[0.05] text-white'
+                } ${loading ? 'cursor-not-allowed opacity-50' : 'focus:border-[rgb(var(--focus))]/60 focus:outline-none focus:ring-4 focus:ring-[rgb(var(--focus))]/10'}`}
               />
             ))}
           </div>
@@ -228,11 +228,11 @@ function VerifyPageContent() {
           </Button>
         </form>
 
-        <div className="mt-5 space-y-3 border-t border-gray-200 pt-4 text-center dark:border-gray-800">
+        <div className="mt-5 space-y-3 border-t border-white/[0.08] pt-4 text-center">
           <button
             onClick={handleResend}
             disabled={loading || resentCooldown > 0 || resent}
-            className="text-sm font-bold text-gray-600 transition-colors hover:text-gray-950 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:text-white"
+            className="text-sm font-bold text-slate-300 transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             {resentCooldown > 0
               ? `Resend code in ${resentCooldown}s`
@@ -246,7 +246,7 @@ function VerifyPageContent() {
               router.push(`/login?next=${encodeURIComponent(nextPath || '/')}`)
             }
             disabled={loading}
-            className="block w-full text-xs font-semibold text-gray-400 transition-colors hover:text-gray-600 disabled:cursor-not-allowed dark:hover:text-gray-200"
+            className="block w-full text-xs font-semibold text-slate-500 transition-colors hover:text-slate-300 disabled:cursor-not-allowed"
           >
             Wrong email? Go back
           </button>

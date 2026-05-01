@@ -140,18 +140,18 @@ export function SearchPageClient({
 
   return (
     <div className="space-y-5">
-      <section className="overflow-hidden rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 md:p-6">
+      <section className="glass-panel overflow-hidden rounded-[1.8rem] p-5 md:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <div className="inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-sky-400/[0.12] px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-sky-100">
               <Compass size={14} />
               Search campus listings
             </div>
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-gray-950 dark:text-white md:text-3xl">
+              <h1 className="text-2xl font-black tracking-tight text-white md:text-3xl">
                 Find the right second-hand deal faster.
               </h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
                 Search across live listings, narrow by category, and jump straight into the item
                 you need before someone else grabs it.
               </p>
@@ -160,7 +160,7 @@ export function SearchPageClient({
 
           <Link
             href="/listing/new"
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-gray-950 px-4 text-sm font-bold text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
+            className="inline-flex h-11 items-center justify-center rounded-2xl bg-[linear-gradient(180deg,rgba(138,194,255,0.96),rgba(88,161,255,0.92))] px-4 text-sm font-bold text-slate-950 shadow-[0_18px_40px_rgba(88,161,255,0.3)] transition-all hover:-translate-y-0.5 hover:brightness-110"
           >
             Post your item
           </Link>
@@ -176,15 +176,15 @@ export function SearchPageClient({
         </div>
       </section>
 
-      <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900 md:p-5">
+      <section className="glass-panel rounded-[1.6rem] p-4 md:p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm font-black text-gray-950 dark:text-white">Search results</p>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm font-black text-white">Search results</p>
+            <p className="mt-1 text-sm text-slate-400">
               {category ? `${activeFilterLabel} selected` : 'Browsing across every category'}
             </p>
           </div>
-          <div className="inline-flex items-center gap-2 self-start rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-bold text-gray-600 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-300">
+          <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/[0.08] bg-white/[0.05] px-3 py-1.5 text-xs font-bold text-slate-300">
             <SlidersHorizontal size={14} />
             {search.trim() ? `Query: "${search.trim()}"` : 'No keyword filter'}
           </div>
@@ -209,14 +209,14 @@ export function SearchPageClient({
         )}
 
         {error && (
-          <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-8 text-center dark:border-red-900/60 dark:bg-red-950/40">
-            <p className="text-sm font-semibold text-red-700 dark:text-red-300">Search failed to load. Please refresh and try again.</p>
+          <div className="mt-6 rounded-[1.4rem] border border-red-400/20 bg-red-400/[0.12] px-4 py-8 text-center">
+            <p className="text-sm font-semibold text-red-100">Search failed to load. Please refresh and try again.</p>
           </div>
         )}
 
         {!isLoading && !error && filteredListings.length > 0 && (
           <div className="mt-5 space-y-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-slate-400">
               {filteredListings.length} {filteredListings.length === 1 ? 'listing' : 'listings'} found
             </p>
             <ListingGrid listings={filteredListings} />
@@ -224,12 +224,12 @@ export function SearchPageClient({
         )}
 
         {!isLoading && !error && listings && filteredListings.length === 0 && (
-          <div className="mt-6 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-5 py-14 text-center dark:border-gray-700 dark:bg-gray-950">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-lg bg-white text-gray-500 shadow-sm dark:bg-gray-900 dark:text-gray-400">
+          <div className="mt-6 rounded-[1.6rem] border border-dashed border-white/[0.12] bg-white/[0.04] px-5 py-14 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.08] text-slate-400 shadow-sm">
               <SearchIcon size={22} />
             </div>
-            <h2 className="mt-4 text-lg font-black text-gray-950 dark:text-white">No matching listings yet</h2>
-            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500 dark:text-gray-400">
+            <h2 className="mt-4 text-lg font-black text-white">No matching listings yet</h2>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">
               {hasActiveFilters
                 ? 'Try a broader keyword, switch categories, or clear filters to explore more items.'
                 : 'There are no active listings yet. Be the first student to post something useful.'}
@@ -242,14 +242,14 @@ export function SearchPageClient({
                     setCategory(null);
                     setFilters(DEFAULT_LISTING_FEED_FILTERS);
                   }}
-                  className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 transition-colors hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                  className="rounded-xl border border-white/[0.08] bg-white/[0.05] px-4 py-2 text-sm font-bold text-slate-200 transition-all hover:border-white/[0.16] hover:bg-white/[0.08]"
                 >
                   Clear filters
                 </button>
               )}
               <button
                 onClick={() => router.push('/listing/new')}
-                className="rounded-lg bg-gray-950 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-950"
+                className="rounded-xl bg-[linear-gradient(180deg,rgba(138,194,255,0.96),rgba(88,161,255,0.92))] px-4 py-2 text-sm font-bold text-slate-950 shadow-[0_16px_36px_rgba(88,161,255,0.28)] transition-all hover:-translate-y-0.5 hover:brightness-110"
               >
                 Post a listing
               </button>

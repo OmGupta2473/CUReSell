@@ -39,7 +39,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         onChange={(e) => setValue(e.target.value)}
         rows={1}
         placeholder="Message seller..."
-        className="max-h-28 min-h-[44px] flex-1 resize-none rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-gray-300 focus:ring-2 focus:ring-orange-200"
+        className="max-h-28 min-h-[44px] flex-1 resize-none rounded-2xl border border-white/[0.1] bg-white/[0.06] px-4 py-3 text-sm text-white outline-none transition focus:border-[rgb(var(--focus))]/60 focus:ring-4 focus:ring-[rgb(var(--focus))]/10"
         disabled={disabled || sending}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && !e.shiftKey) {
@@ -51,7 +51,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
       <button
         type="submit"
         disabled={disabled || sending || !value.trim()}
-        className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-900 text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:bg-gray-300"
+        className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(180deg,rgba(138,194,255,0.96),rgba(88,161,255,0.92))] text-slate-950 transition-all hover:-translate-y-0.5 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <SendHorizonal size={16} />
       </button>

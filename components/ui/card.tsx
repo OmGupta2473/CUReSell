@@ -7,7 +7,7 @@ export function Card({ className, ...props }: DivProps) {
   return (
     <div
       className={cn(
-        'rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900',
+        'glass-panel rounded-2xl',
         className
       )}
       {...props}
@@ -16,13 +16,13 @@ export function Card({ className, ...props }: DivProps) {
 }
 
 export function CardHeader({ className, ...props }: DivProps) {
-  return <div className={cn('p-5', className)} {...props} />;
+  return <div className={cn('p-5 sm:p-6', className)} {...props} />;
 }
 
 export function CardContent({ className, ...props }: DivProps) {
-  return <div className={cn('p-5 pt-0', className)} {...props} />;
+  return <div className={cn('p-5 pt-0 sm:p-6 sm:pt-0', className)} {...props} />;
 }
 
 export function CardFooter({ className, ...props }: DivProps) {
-  return <div className={cn('p-5 pt-0', className)} {...props} />;
+  return <div className={cn('p-5 pt-0 sm:p-6 sm:pt-0', className)} {...props} />;
 }

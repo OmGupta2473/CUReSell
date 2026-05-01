@@ -5,6 +5,7 @@ import type React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
+import { BottomNav } from '@/components/layout/BottomNav';
 import {
   ArrowRight,
   ChevronLeft,
@@ -13,23 +14,20 @@ import {
   Search,
   ShoppingBag,
   Sparkles,
-  Home,
-  User,
 } from 'lucide-react';
 import { VerifiedBadge } from '@/components/ui/VerifiedBadge';
-import { CATEGORY_LABELS, CONDITION_LABELS, type Category, type Listing } from '@/lib/types';
+import { CONDITION_LABELS, type Category, type Listing } from '@/lib/types';
 import { conditionColor, formatPrice, timeAgo } from '@/lib/utils/formatters';
 
-
-const CATEGORY_ICONS: Record<Category, string> = {
-  books: '📚',
-  electronics: '💻',
-  furniture: '🪑',
-  kitchen: '🍳',
-  clothes: '👕',
-  cycles: '🚲',
-  sports: '⚽',
-  other: '📦',
+const CATEGORY_MARKERS: Record<Category, string> = {
+  books: 'BK',
+  electronics: 'EL',
+  furniture: 'FR',
+  kitchen: 'KT',
+  clothes: 'CL',
+  cycles: 'CY',
+  sports: 'SP',
+  other: 'OT',
 };
 
 const BANNER_SLIDES = [
@@ -53,7 +51,7 @@ const BANNER_SLIDES = [
   },
   {
     tag: 'Electronics',
-    heading: 'Calculators, laptops, lab equipment — all here.',
+    heading: 'Calculators, laptops, lab equipment, all here.',
     sub: 'Trusted sellers, in-app chat, no OLX spam.',
     cta: 'See electronics',
     href: '/search?category=electronics',
@@ -75,20 +73,20 @@ const HOW_IT_WORKS = [
   {
     number: '01',
     icon: ShoppingBag,
-    title: 'Sell & buy what others need',
-    desc: 'Post your unused items in under 60 seconds — photo, price, done. Browse listings from verified campus students.',
+    title: 'Sell and buy what others need',
+    desc: 'Post your unused items in under 60 seconds. Browse listings from verified campus students.',
   },
   {
     number: '02',
     icon: Sparkles,
     title: 'Discover great deals',
-    desc: 'Find study tables, appliances, books and more at student-friendly prices. Filter by category, condition, and seller area.',
+    desc: 'Find study tables, appliances, books and more at student-friendly prices.',
   },
   {
     number: '03',
     icon: MessageCircle,
     title: 'Chat instantly, close the deal',
-    desc: 'Message sellers directly inside the app. No sharing numbers publicly. Safe, simple, and built for the CU student community.',
+    desc: 'Message sellers directly inside the app. Safe, simple, and built for the CU student community.',
   },
 ] as const;
 
@@ -168,7 +166,6 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
 
     let start = 0;
     const end = boostedCount;
-
     const duration = 1200;
     const stepTime = 20;
     const step = Math.ceil((end - start) / (duration / stepTime));
@@ -186,33 +183,34 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
 
     return () => clearInterval(timer);
   }, [boostedCount, isVisible]);
+
   const searchHref = '/search';
   const loginHref = '/login';
   const sellHref = isAuthenticated ? '/listing/new' : '/login?next=%2Flisting%2Fnew';
   const slideHref = slide.cta === 'Post a listing' ? sellHref : slide.href;
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
+    <div className="min-h-screen overflow-x-hidden bg-transparent text-white">
       <Navbar />
 
-      <div className="pt-14">
-        <div className="border-b border-gray-100 bg-gray-50 px-4 py-4">
+      <div className="pt-16">
+        <div className="border-b border-white/[0.08] bg-[rgb(var(--background))]/45 px-4 py-4 backdrop-blur-2xl">
           <div className="mx-auto max-w-2xl">
             <form onSubmit={handleSearch} className="relative">
               <Search
                 size={18}
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
               />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search for study tables, books, laptops..."
-                className="h-12 w-full rounded-2xl border border-gray-200 bg-white pl-11 pr-28 text-sm shadow-sm placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-black"
+                className="h-12 w-full rounded-[1.4rem] border border-white/[0.1] bg-white/[0.06] pl-11 pr-28 text-sm text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_18px_40px_rgba(0,0,0,0.2)] placeholder:text-slate-500 focus:border-[rgb(var(--focus))]/60 focus:outline-none focus:ring-4 focus:ring-[rgb(var(--focus))]/10"
               />
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 h-8 -translate-y-1/2 rounded-xl bg-black px-4 text-xs font-medium text-white transition-colors hover:bg-gray-800"
+                className="absolute right-2 top-1/2 h-8 -translate-y-1/2 rounded-xl bg-[linear-gradient(180deg,rgba(138,194,255,0.96),rgba(88,161,255,0.92))] px-4 text-xs font-medium text-slate-950 shadow-[0_12px_24px_rgba(88,161,255,0.22)] transition-all hover:brightness-110"
               >
                 Search
               </button>
@@ -220,41 +218,41 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
           </div>
         </div>
 
-        <div
-          className="relative text-white bg-cover bg-center transition-all duration-700"
+        <section
+          className="relative overflow-hidden text-white transition-all duration-700"
           style={{
             backgroundImage: `url(${slide.bg})`,
-            height: '360px',
-            minHeight: '360px',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            minHeight: '420px',
           }}
         >
-          {/* Dark overlay */}
-          <div className="absolute inset-0 bg-black/50"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(7,9,14,0.84),rgba(7,9,14,0.48),rgba(7,9,14,0.78))]" />
 
-          <div className="relative z-10 mx-auto flex min-h-[360px] max-w-6xl flex-col justify-center px-6 py-8 md:py-12">
-            <div className="flex min-h-[160px] max-w-xl flex-col justify-between">
+          <div className="relative z-10 mx-auto flex min-h-[420px] max-w-6xl flex-col justify-center px-6 py-10 md:py-14">
+            <div className="max-w-2xl space-y-5">
               <span
-                className="mb-6 inline-flex h-9 max-w-fit items-center rounded-full border px-4 text-xs font-semibold whitespace-nowrap"
+                className="inline-flex h-9 max-w-fit items-center whitespace-nowrap rounded-full border px-4 text-xs font-semibold backdrop-blur-xl"
                 style={{
-                  background: `${slide.accent}25`,
+                  background: `${slide.accent}20`,
                   color: slide.accent,
-                  border: `1px solid ${slide.accent}40`,
+                  borderColor: `${slide.accent}40`,
                 }}
               >
                 {slide.tag}
               </span>
 
-              <h2 className="mb-3 min-h-[56px] text-2xl font-bold leading-tight text-white md:min-h-[72px] md:text-3xl">
+              <h1 className="max-w-xl text-3xl font-black leading-tight tracking-tight text-white md:text-5xl">
                 {slide.heading}
-              </h2>
+              </h1>
 
-              <p className="mb-6 min-h-[40px] text-sm leading-relaxed text-white/70 md:min-h-[48px] md:text-base">
+              <p className="max-w-lg text-sm leading-7 text-white/72 md:text-base">
                 {slide.sub}
               </p>
 
               <Link
                 href={slideHref}
-                className="inline-flex h-10 w-[150px] md:w-[180px] items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all hover:scale-105"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl px-5 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:scale-[1.01]"
                 style={{ background: slide.accent, color: '#111' }}
               >
                 {slide.cta}
@@ -263,55 +261,54 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
             </div>
           </div>
 
-          {/* Left Arrow */}
           <button
             onClick={() => goTo((currentSlide - 1 + BANNER_SLIDES.length) % BANNER_SLIDES.length)}
-            className="absolute left-3 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
+            className="absolute left-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/[0.12] bg-black/25 transition-colors hover:bg-white/[0.14]"
             aria-label="Previous slide"
           >
             <ChevronLeft size={16} className="text-white" />
           </button>
 
-          {/* Right Arrow */}
           <button
             onClick={() => goTo((currentSlide + 1) % BANNER_SLIDES.length)}
-            className="absolute right-3 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
+            className="absolute right-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/[0.12] bg-black/25 transition-colors hover:bg-white/[0.14]"
             aria-label="Next slide"
           >
             <ChevronRight size={16} className="text-white" />
           </button>
 
-          {/* Slider Dots */}
-          <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+          <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2">
             {BANNER_SLIDES.map((_, i) => (
               <button
                 key={i}
                 onClick={() => goTo(i)}
-                className={`rounded-full transition-all duration-300 ${i === currentSlide
-                  ? 'h-2 w-6 bg-white'
-                  : 'h-2 w-2 bg-white/40 hover:bg-white/60'
-                  }`}
+                className={`rounded-full transition-all duration-300 ${
+                  i === currentSlide ? 'h-2 w-6 bg-white' : 'h-2 w-2 bg-white/35 hover:bg-white/60'
+                }`}
                 aria-label={`Go to slide ${i + 1}`}
               />
             ))}
           </div>
-        </div>
+        </section>
+
         {trending.length > 0 && (
-          <div className="bg-gray-50 py-10">
+          <section className="py-10">
             <div className="mx-auto max-w-6xl px-4">
-              <div className="mb-5 flex items-center justify-between">
+              <div className="mb-5 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">🔥</span>
-                  <h2 className="text-lg font-semibold text-gray-900">Trending now</h2>
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.06] text-sm">
+                    +
+                  </span>
+                  <h2 className="text-lg font-semibold text-white">Trending now</h2>
                   {trending.some((listing) => listing.is_featured) && (
-                    <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                    <span className="rounded-full border border-amber-300/20 bg-amber-400/[0.12] px-2 py-0.5 text-xs font-medium text-amber-100">
                       Admin picks
                     </span>
                   )}
                 </div>
                 <Link
                   href={searchHref}
-                  className="flex items-center gap-1 text-sm text-gray-500 transition-colors hover:text-gray-800"
+                  className="flex items-center gap-1 text-sm text-slate-400 transition-colors hover:text-white"
                 >
                   View more <ArrowRight size={14} />
                 </Link>
@@ -324,8 +321,8 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
 
                   return (
                     <Link key={listing.id} href={`/listing/${listing.id}`}>
-                      <div className="group overflow-hidden rounded-2xl border border-gray-100 bg-white transition-all hover:border-gray-200 hover:shadow-md">
-                        <div className="relative aspect-square bg-gray-100">
+                      <div className="glass-panel group overflow-hidden rounded-[1.5rem] transition-all hover:-translate-y-1 hover:border-white/[0.16]">
+                        <div className="relative aspect-square bg-white/[0.05]">
                           {img ? (
                             <Image
                               src={img}
@@ -335,25 +332,23 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
                               sizes="(max-width: 640px) 50vw, 25vw"
                             />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center bg-gray-100">
-                              <span className="text-3xl">{CATEGORY_ICONS[listing.category]}</span>
+                            <div className="flex h-full w-full items-center justify-center">
+                              <span className="rounded-2xl bg-white/[0.08] px-3 py-2 text-sm font-black text-slate-100">
+                                {CATEGORY_MARKERS[listing.category]}
+                              </span>
                             </div>
                           )}
                           {listing.is_negotiable && (
                             <div className="absolute left-2 top-2">
-                              <span className="rounded-full border border-gray-200 bg-white/90 px-1.5 py-0.5 text-[10px] font-medium text-gray-700">
+                              <span className="rounded-full border border-white/[0.18] bg-black/35 px-1.5 py-0.5 text-[10px] font-medium text-slate-100 backdrop-blur-xl">
                                 Negotiable
                               </span>
                             </div>
                           )}
                         </div>
                         <div className="space-y-1 p-3">
-                          <p className="text-sm font-bold text-gray-900">
-                            {formatPrice(listing.price)}
-                          </p>
-                          <p className="truncate text-xs leading-tight text-gray-600">
-                            {listing.title}
-                          </p>
+                          <p className="text-sm font-bold text-white">{formatPrice(listing.price)}</p>
+                          <p className="truncate text-xs leading-tight text-slate-300">{listing.title}</p>
                           <div className="flex items-center justify-between pt-0.5">
                             <span
                               className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${conditionColor(
@@ -362,13 +357,13 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
                             >
                               {CONDITION_LABELS[listing.condition]}
                             </span>
-                            <span className="text-[10px] text-gray-400">
+                            <span className="text-[10px] text-slate-500">
                               {timeAgo(listing.created_at)}
                             </span>
                           </div>
                           {seller && (
                             <div className="flex items-center gap-1 pt-1">
-                              <span className="truncate text-[10px] text-gray-400">
+                              <span className="truncate text-[10px] text-slate-500">
                                 {seller.full_name}
                               </span>
                               {seller.is_cu_verified && <VerifiedBadge size="sm" />}
@@ -381,28 +376,28 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
                 })}
               </div>
             </div>
-          </div>
+          </section>
         )}
 
-        <div id="how-it-works" className="mx-auto max-w-6xl px-4 py-14">
+        <section id="how-it-works" className="mx-auto max-w-6xl px-4 py-14">
           <div className="mb-10 text-center">
-            <h2 className="text-xl md:text-3xl font-bold text-gray-900">How CUReSell works</h2>
-            <p className="mt-2 text-sm text-gray-400">Three steps. No complexity.</p>
+            <h2 className="text-xl font-bold text-white md:text-3xl">How CUReSell works</h2>
+            <p className="mt-2 text-sm text-slate-400">Three steps. No complexity.</p>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {HOW_IT_WORKS.map(({ number, icon: Icon, title, desc }) => (
               <div
                 key={number}
-                className="group relative rounded-2xl bg-gray-50 p-6 transition-colors hover:bg-gray-100"
+                className="glass-panel-muted group relative rounded-[1.6rem] p-6 transition-all hover:-translate-y-1 hover:bg-white/[0.08]"
               >
-                <div className="pointer-events-none absolute right-5 top-5 select-none text-5xl font-black text-gray-100 transition-colors group-hover:text-gray-200">
+                <div className="pointer-events-none absolute right-5 top-5 select-none text-5xl font-black text-white/[0.05] transition-colors group-hover:text-white/[0.08]">
                   {number}
                 </div>
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-black text-white">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.08] text-sky-100">
                   <Icon size={18} />
                 </div>
-                <h3 className="mb-2 text-sm font-semibold leading-snug text-gray-900">{title}</h3>
-                <p className="text-xs leading-relaxed text-gray-500">{desc}</p>
+                <h3 className="mb-2 text-sm font-semibold leading-snug text-white">{title}</h3>
+                <p className="text-xs leading-relaxed text-slate-400">{desc}</p>
               </div>
             ))}
           </div>
@@ -410,26 +405,27 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
           <div className="mt-10 text-center">
             <Link
               href={searchHref}
-              className="inline-flex h-12 items-center gap-2 rounded-2xl bg-black px-8 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
+              className="inline-flex h-12 items-center gap-2 rounded-2xl bg-[linear-gradient(180deg,rgba(138,194,255,0.96),rgba(88,161,255,0.92))] px-8 text-sm font-semibold text-slate-950 shadow-[0_18px_40px_rgba(88,161,255,0.3)] transition-all hover:-translate-y-0.5 hover:brightness-110"
             >
               Get started - it&apos;s free
               <ArrowRight size={16} />
             </Link>
           </div>
-        </div>
+        </section>
 
-        <div ref={counterRef} className="bg-black px-4 py-14 text-white">
+        <div
+          ref={counterRef}
+          className="mx-4 rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(10,12,18,0.96),rgba(15,18,26,0.92))] px-4 py-14 text-white shadow-[0_28px_70px_rgba(0,0,0,0.32)]"
+        >
           <div className="mx-auto max-w-2xl space-y-4 text-center">
-            <p className="text-5xl font-black tracking-tight">
-              {animatedCount}+
-            </p>
+            <p className="text-5xl font-black tracking-tight">{animatedCount}+</p>
             <p className="text-lg font-semibold text-white/90">students already on CUReSell</p>
-            <p className="mx-auto max-w-sm text-sm text-white/50">
+            <p className="mx-auto max-w-sm text-sm text-white/60">
               Join your campus community. Buy smarter. Sell faster. No OLX chaos.
             </p>
             <Link
               href={loginHref}
-              className="mt-4 inline-flex h-11 items-center gap-2 rounded-xl bg-white px-6 text-sm font-semibold text-black transition-colors hover:bg-gray-100"
+              className="mt-4 inline-flex h-11 items-center gap-2 rounded-2xl bg-[linear-gradient(180deg,rgba(138,194,255,0.96),rgba(88,161,255,0.92))] px-6 text-sm font-semibold text-slate-950 shadow-[0_18px_40px_rgba(88,161,255,0.3)] transition-all hover:-translate-y-0.5 hover:brightness-110"
             >
               Join now
               <ArrowRight size={14} />
@@ -437,65 +433,21 @@ export function LandingPage({ trending, studentCount, isAuthenticated }: Landing
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white/95 shadow-[0_-12px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl md:hidden">
-          <div className="grid h-16 grid-cols-4 items-center px-1">
-            <Link
-              href={searchHref}
-              className="flex flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium text-gray-500 transition-colors hover:text-gray-950"
-            >
-              <span className="flex h-8 w-10 items-center justify-center rounded-lg">
-                <Search size={20} strokeWidth={1.8} />
-              </span>
-              <span>Search</span>
-            </Link>
+        <BottomNav initialSignedIn={isAuthenticated} />
 
-            <Link
-              href="/feed"
-              className="flex flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium text-gray-500 transition-colors hover:text-gray-950"
-            >
-              <span className="flex h-8 w-10 items-center justify-center rounded-lg">
-                <Home size={20} strokeWidth={1.8} />
-              </span>
-              <span>Feed</span>
-            </Link>
+        <div className="h-20 md:hidden" />
 
-            <Link
-              href="/messages"
-              className="flex flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium text-gray-500 transition-colors hover:text-gray-950"
-            >
-              <span className="flex h-8 w-10 items-center justify-center rounded-lg">
-                <MessageCircle size={20} strokeWidth={1.8} />
-              </span>
-              <span>Messages</span>
-            </Link>
-
-            <Link
-              href="/profile"
-              className="flex flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium text-gray-500 transition-colors hover:text-gray-950"
-            >
-              <span className="flex h-8 w-10 items-center justify-center rounded-lg">
-                <User size={20} strokeWidth={1.8} />
-              </span>
-              <span>Profile</span>
-            </Link>
-          </div>
-        </nav>
-
-        {/* Add bottom padding on mobile for nav */}
-        <div className="h-16 md:hidden"></div>
-
-        <footer className="border-t border-gray-100 bg-gray-50 px-4 py-8">
+        <footer className="mt-10 border-t border-white/[0.08] bg-[rgb(var(--background))]/45 px-4 py-8 backdrop-blur-2xl">
           <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
-            <p className="font-bold text-gray-900">CUReSell</p>
-            <p className="text-xs text-gray-400">
+            <p className="font-bold text-white">CUReSell</p>
+            <p className="text-xs text-slate-500">
               Campus marketplace for Chandigarh University students
             </p>
-            <div className="flex items-center gap-4 text-xs text-gray-400">
-              <Link href={searchHref} className="hover:text-gray-600">
+            <div className="flex items-center gap-4 text-xs text-slate-500">
+              <Link href={searchHref} className="hover:text-white">
                 Browse listings
               </Link>
-              <Link href={loginHref} className="hover:text-gray-600">
+              <Link href={loginHref} className="hover:text-white">
                 Sign in
               </Link>
             </div>

@@ -252,9 +252,9 @@ export function ListingDetail({ listing }: ListingDetailProps) {
   }
 
   return (
-    <div className="pb-28">
-      <div className="sticky top-16 z-30 -mx-4 border-b border-gray-200 bg-[rgb(var(--background))]/95 px-4 py-3 backdrop-blur-xl dark:border-gray-800 md:-mx-6 md:px-6">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
+    <div className="pb-24 sm:pb-28">
+      <div className="sticky top-16 z-30 -mx-4 border-b border-white/[0.08] bg-[rgb(var(--background))]/72 px-4 py-2.5 backdrop-blur-2xl md:-mx-6 md:px-6 md:py-3">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 sm:gap-3">
           <Button
             size="icon"
             variant="ghost"
@@ -285,17 +285,17 @@ export function ListingDetail({ listing }: ListingDetailProps) {
                 <Heart size={18} className={saved ? 'fill-current' : ''} />
               )}
             </Button>
-            <Button variant="ghost" onClick={handleShare}>
+            <Button variant="ghost" onClick={handleShare} className="px-2.5 sm:px-4">
               <Share2 size={16} />
-              {shareLabel}
+              <span className="hidden sm:inline">{shareLabel}</span>
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-6xl gap-6 pt-5 lg:grid-cols-[minmax(0,1.1fr)_24rem] lg:items-start">
-        <section className="space-y-4">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div className="mx-auto grid max-w-6xl gap-4 pt-4 sm:gap-5 sm:pt-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)] lg:items-start xl:grid-cols-[minmax(0,1.08fr)_24rem]">
+        <section className="space-y-3 sm:space-y-4 lg:max-w-2xl">
+          <div className="glass-panel relative aspect-[5/4] overflow-hidden rounded-[1.6rem] sm:aspect-[4/3] lg:aspect-[16/9]">
             {images.length > 0 ? (
               <Image
                 src={images[currentImage].url}
@@ -311,7 +311,7 @@ export function ListingDetail({ listing }: ListingDetailProps) {
             )}
             {isSold && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/35">
-                <span className="rounded-full bg-gray-950/90 px-4 py-2 text-sm font-bold text-white">
+                <span className="rounded-full border border-white/[0.16] bg-black/60 px-4 py-2 text-sm font-bold text-white">
                   Sold
                 </span>
               </div>
@@ -319,7 +319,10 @@ export function ListingDetail({ listing }: ListingDetailProps) {
           </div>
 
           {images.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide" aria-label="Listing images">
+            <div
+              className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide sm:gap-2"
+              aria-label="Listing images"
+            >
               {images.map((img, i) => (
                 <button
                   key={img.id}
@@ -328,10 +331,10 @@ export function ListingDetail({ listing }: ListingDetailProps) {
                   aria-label={`Show image ${i + 1}`}
                   aria-pressed={i === currentImage}
                   className={cn(
-                    'relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border transition-colors',
+                    'relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg border transition-colors sm:h-16 sm:w-16',
                     i === currentImage
-                      ? 'border-gray-950 ring-2 ring-gray-950/10 dark:border-white dark:ring-white/10'
-                      : 'border-gray-200 hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700'
+                      ? 'border-sky-300/20 ring-2 ring-sky-400/20'
+                      : 'border-white/[0.08] hover:border-white/[0.16]'
                   )}
                 >
                   <Image src={img.url} alt="" fill className="object-cover" />
@@ -340,9 +343,9 @@ export function ListingDetail({ listing }: ListingDetailProps) {
             </div>
           )}
 
-          <article className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0 space-y-3">
+          <article className="glass-panel rounded-[1.6rem] p-4 sm:p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="min-w-0 space-y-2.5 sm:space-y-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <span
                     className={`rounded-full px-2.5 py-1 text-xs font-bold ${conditionColor(
@@ -351,17 +354,17 @@ export function ListingDetail({ listing }: ListingDetailProps) {
                   >
                     {CONDITION_LABELS[listing.condition]}
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.06] px-2.5 py-1 text-xs font-bold text-slate-300">
                     <Tag size={12} />
                     {CATEGORY_LABELS[listing.category]}
                   </span>
                 </div>
 
                 <div>
-                  <h1 className="text-2xl font-black leading-tight tracking-tight text-gray-950 dark:text-white md:text-3xl">
+                  <h1 className="text-xl font-black leading-tight tracking-tight text-white sm:text-2xl md:text-3xl">
                     {listing.title}
                   </h1>
-                  <div className="mt-3 flex flex-wrap items-center gap-3 text-xs font-medium text-gray-500 dark:text-gray-400">
+                  <div className="mt-2 flex flex-wrap items-center gap-2.5 text-[11px] font-medium text-slate-400 sm:mt-3 sm:gap-3 sm:text-xs">
                     <span>{timeAgo(listing.created_at)}</span>
                     <span className="inline-flex items-center gap-1">
                       <Eye size={13} />
@@ -372,11 +375,11 @@ export function ListingDetail({ listing }: ListingDetailProps) {
               </div>
 
               <div className="shrink-0 sm:text-right">
-                <p className="text-3xl font-black tracking-tight text-gray-950 dark:text-white">
+                <p className="text-2xl font-black tracking-tight text-white sm:text-3xl">
                   {formatFullPrice(listing.price)}
                 </p>
                 {listing.is_negotiable && (
-                  <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-300">
+                  <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-sky-200">
                     Negotiable
                   </p>
                 )}
@@ -384,9 +387,9 @@ export function ListingDetail({ listing }: ListingDetailProps) {
             </div>
 
             {listing.description && (
-              <div className="mt-5 border-t border-gray-200 pt-5 dark:border-gray-800">
-                <h2 className="text-sm font-black text-gray-950 dark:text-white">Description</h2>
-                <p className="mt-2 whitespace-pre-line text-sm leading-7 text-gray-600 dark:text-gray-300">
+              <div className="mt-4 border-t border-white/[0.08] pt-4 sm:mt-5 sm:pt-5">
+                <h2 className="text-sm font-black text-white">Description</h2>
+                <p className="mt-2 whitespace-pre-line text-sm leading-6 text-slate-300 sm:leading-7">
                   {listing.description}
                 </p>
               </div>
@@ -394,14 +397,14 @@ export function ListingDetail({ listing }: ListingDetailProps) {
           </article>
         </section>
 
-        <aside className="space-y-4 lg:sticky lg:top-36">
+        <aside className="space-y-3 sm:space-y-4 xl:sticky xl:top-36">
           {seller && (
             <Link
               href={`/profile/${seller.id}`}
-              className="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-colors hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700"
+              className="glass-panel block rounded-[1.4rem] p-3.5 transition-all hover:-translate-y-0.5 hover:border-white/[0.16] sm:p-4"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white/[0.08]">
                   {seller.avatar_url ? (
                     <Image
                       src={seller.avatar_url}
@@ -411,26 +414,26 @@ export function ListingDetail({ listing }: ListingDetailProps) {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <span className="text-base font-black text-gray-600 dark:text-gray-300">
+                    <span className="text-base font-black text-slate-200">
                       {seller.full_name?.charAt(0).toUpperCase()}
                     </span>
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <p className="truncate text-sm font-black text-gray-950 dark:text-white">
+                    <p className="truncate text-sm font-black text-white">
                       {seller.full_name}
                     </p>
                     {seller.is_cu_verified && <VerifiedBadge size="sm" showLabel />}
                   </div>
-                  <p className="mt-1 flex items-center gap-1 truncate text-xs text-gray-500 dark:text-gray-400">
+                  <p className="mt-1 flex items-center gap-1 truncate text-xs text-slate-400">
                     <MapPin size={12} />
                     {[seller.department, seller.hostel_block, seller.year_of_study]
                       .filter(Boolean)
                       .join(' / ') || 'Campus seller'}
                   </p>
                 </div>
-                <span className="text-sm font-bold text-gray-400">View</span>
+                <span className="text-sm font-bold text-slate-500">View</span>
               </div>
             </Link>
           )}
@@ -438,29 +441,29 @@ export function ListingDetail({ listing }: ListingDetailProps) {
           {actionMessage && (
             <div
               role="status"
-              className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"
+              className="rounded-[1.2rem] border border-sky-300/20 bg-sky-400/[0.12] px-4 py-3 text-sm font-semibold text-sky-100"
             >
               {actionMessage}
             </div>
           )}
 
           {!isSeller && user && (
-            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div className="glass-panel rounded-[1.4rem] p-3.5 sm:p-4">
               <button
                 type="button"
                 onClick={() => setReportOpen((value) => !value)}
                 disabled={reportSubmitted}
-                className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 transition-colors hover:text-gray-900 disabled:cursor-not-allowed disabled:text-emerald-600 dark:text-gray-400 dark:hover:text-white dark:disabled:text-emerald-300"
+                className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 transition-colors hover:text-white disabled:cursor-not-allowed disabled:text-sky-200"
               >
                 <Flag size={14} />
                 {reportSubmitted ? 'Report submitted' : reportOpen ? 'Hide report form' : 'Report this listing'}
               </button>
 
               {reportOpen && !reportSubmitted && (
-                <div className="mt-4 space-y-4">
+                <div className="mt-3 space-y-3 sm:mt-4 sm:space-y-4">
                   <div>
-                    <p className="text-sm font-black text-gray-950 dark:text-white">Report this listing</p>
-                    <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">
+                    <p className="text-sm font-black text-white">Report this listing</p>
+                    <p className="mt-1 text-xs leading-5 text-slate-400">
                       This sends the listing to campus admins for review. Reports are limited to one per user per listing.
                     </p>
                   </div>
@@ -472,10 +475,10 @@ export function ListingDetail({ listing }: ListingDetailProps) {
                         type="button"
                         onClick={() => setReportReason(reason.value)}
                         className={cn(
-                          'w-full rounded-lg border px-3 py-3 text-left transition-colors',
+                          'w-full rounded-[1.1rem] border px-3 py-3 text-left transition-all',
                           reportReason === reason.value
-                            ? 'border-gray-950 bg-gray-950 text-white dark:border-white dark:bg-white dark:text-gray-950'
-                            : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-200 dark:hover:border-gray-700'
+                            ? 'border-sky-300/20 bg-sky-400/[0.16] text-white shadow-[0_16px_36px_rgba(88,161,255,0.18)]'
+                            : 'border-white/[0.08] bg-white/[0.04] text-slate-200 hover:border-white/[0.14] hover:bg-white/[0.07]'
                         )}
                       >
                         <p className="text-sm font-bold">{reason.label}</p>
@@ -483,8 +486,8 @@ export function ListingDetail({ listing }: ListingDetailProps) {
                           className={cn(
                             'mt-1 text-xs leading-5',
                             reportReason === reason.value
-                              ? 'text-white/70 dark:text-gray-600'
-                              : 'text-gray-500 dark:text-gray-400'
+                              ? 'text-white/70'
+                              : 'text-slate-400'
                           )}
                         >
                           {reason.helper}
@@ -494,7 +497,7 @@ export function ListingDetail({ listing }: ListingDetailProps) {
                   </div>
 
                   <label className="block space-y-1.5">
-                    <span className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
+                    <span className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
                       Extra details
                     </span>
                     <textarea
@@ -503,7 +506,7 @@ export function ListingDetail({ listing }: ListingDetailProps) {
                       rows={3}
                       maxLength={300}
                       placeholder="Anything an admin should know before reviewing this listing?"
-                      className="w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-3 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-teal-400 focus:ring-4 focus:ring-teal-100 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-100 dark:focus:ring-teal-950"
+                      className="w-full resize-none rounded-[1.1rem] border border-white/[0.1] bg-white/[0.06] px-3 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-[rgb(var(--focus))]/60 focus:ring-4 focus:ring-[rgb(var(--focus))]/10"
                     />
                   </label>
 
@@ -529,13 +532,13 @@ export function ListingDetail({ listing }: ListingDetailProps) {
         </aside>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 p-4 pb-safe shadow-[0_-12px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl dark:border-gray-800 dark:bg-gray-950/90">
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.08] bg-[rgb(var(--background))]/75 px-3 py-3 pb-safe backdrop-blur-2xl sm:px-4 sm:py-4">
         <div className="mx-auto max-w-6xl">
           {isSeller ? (
             <div className="grid gap-2 sm:grid-cols-2">
               <Link
                 href={`/listing/${listing.id}/edit`}
-                className="inline-flex h-11 items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-bold text-gray-800 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
+                className="inline-flex h-10 items-center justify-center rounded-2xl border border-white/[0.1] bg-white/[0.06] px-4 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-white/[0.1] sm:h-11"
               >
                 Edit listing
               </Link>

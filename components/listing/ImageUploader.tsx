@@ -127,17 +127,17 @@ export function ImageUploader({ items, onChange, maxFiles = 4, error }: ImageUpl
   const slots = Array.from({ length: maxFiles });
 
   return (
-    <section className="space-y-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <section className="glass-panel space-y-3 rounded-[1.6rem] p-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <label className="text-sm font-black text-gray-950 dark:text-white">
+          <label className="text-sm font-black text-white">
             Photos <span className="text-red-500">*</span>
           </label>
-          <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-xs leading-5 text-slate-400">
             First photo becomes the cover. Add up to {maxFiles} clear photos.
           </p>
         </div>
-        <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-bold text-gray-600 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-300">
+        <span className="rounded-full border border-white/[0.08] bg-white/[0.06] px-2.5 py-1 text-xs font-bold text-slate-300">
           {items.length}/{maxFiles}
         </span>
       </div>
@@ -153,19 +153,19 @@ export function ImageUploader({ items, onChange, maxFiles = 4, error }: ImageUpl
             return (
               <div
                 key={i}
-                className="group relative aspect-square overflow-hidden rounded-lg border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-950"
+                className="group relative aspect-square overflow-hidden rounded-[1.1rem] border border-white/[0.08] bg-white/[0.05]"
               >
                 <Image src={preview} alt={`Listing photo ${i + 1}`} fill className="object-cover" />
                 <button
                   type="button"
                   onClick={() => removeFile(i)}
-                  className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg bg-gray-950/80 text-white backdrop-blur transition-colors hover:bg-gray-950"
+                  className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg bg-black/55 text-white backdrop-blur transition-colors hover:bg-black/70"
                   aria-label={`Remove photo ${i + 1}`}
                 >
                   <X size={14} />
                 </button>
                 {isFirst && (
-                  <span className="absolute bottom-2 left-2 rounded-full bg-gray-950/80 px-2 py-1 text-[10px] font-bold text-white backdrop-blur">
+                  <span className="absolute bottom-2 left-2 rounded-full border border-white/[0.14] bg-black/55 px-2 py-1 text-[10px] font-bold text-white backdrop-blur">
                     Cover
                   </span>
                 )}
@@ -180,11 +180,11 @@ export function ImageUploader({ items, onChange, maxFiles = 4, error }: ImageUpl
               onClick={() => inputRef.current?.click()}
               disabled={!isAvailable}
               className={cn(
-                'aspect-square rounded-lg border-2 border-dashed transition-colors',
+                'aspect-square rounded-[1.1rem] border-2 border-dashed transition-all',
                 'flex flex-col items-center justify-center gap-2',
                 isFirst && items.length === 0
-                  ? 'border-gray-950 bg-gray-50 text-gray-950 hover:bg-gray-100 dark:border-white dark:bg-gray-950 dark:text-white dark:hover:bg-gray-900'
-                  : 'border-gray-200 bg-white text-gray-400 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800',
+                  ? 'border-sky-300/20 bg-sky-400/[0.12] text-sky-100 hover:bg-sky-400/[0.18]'
+                  : 'border-white/[0.08] bg-white/[0.04] text-slate-500 hover:border-white/[0.16] hover:bg-white/[0.08]',
                 !isAvailable && 'cursor-not-allowed opacity-30'
               )}
               aria-label={isFirst && items.length === 0 ? 'Add cover photo' : `Add photo ${i + 1}`}

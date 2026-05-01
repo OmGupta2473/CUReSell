@@ -47,24 +47,15 @@ export function ProfileSetupModal({ userId, email }: ProfileSetupModalProps) {
   }
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: 'rgba(0,0,0,0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1rem',
-      }}
-    >
-      <div className="w-full max-w-sm bg-white rounded-2xl p-6 space-y-5">
+    <div className="flex min-h-screen items-center justify-center bg-black/45 p-4 backdrop-blur-xl">
+      <div className="glass-panel w-full max-w-sm rounded-[1.75rem] p-6 text-white">
         <div>
-          <h2 className="text-lg font-semibold">Complete your profile</h2>
-          <p className="text-sm text-gray-400 mt-1">Logged in as {email}</p>
+          <h2 className="text-lg font-semibold tracking-tight">Complete your profile</h2>
+          <p className="mt-1 text-sm text-slate-400">Logged in as {email}</p>
         </div>
-        <form onSubmit={handleSave} className="space-y-4">
+        <form onSubmit={handleSave} className="mt-5 space-y-4">
           <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-slate-200">
               Your name <span className="text-red-500">*</span>
             </label>
             <input
@@ -72,15 +63,15 @@ export function ProfileSetupModal({ userId, email }: ProfileSetupModalProps) {
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Rahul Sharma"
               autoFocus
-              className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              className="h-11 w-full rounded-xl border border-white/[0.1] bg-white/[0.06] px-3.5 text-sm text-white outline-none focus:border-[rgb(var(--focus))]/60 focus:ring-4 focus:ring-[rgb(var(--focus))]/10"
             />
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">Department</label>
+            <label className="text-sm font-medium text-slate-200">Department</label>
             <select
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-              className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white"
+              className="h-11 w-full rounded-xl border border-white/[0.1] bg-white/[0.06] px-3.5 text-sm text-white outline-none focus:border-[rgb(var(--focus))]/60 focus:ring-4 focus:ring-[rgb(var(--focus))]/10"
             >
               <option value="">Select department</option>
               {DEPARTMENTS.map((d) => (
@@ -91,11 +82,11 @@ export function ProfileSetupModal({ userId, email }: ProfileSetupModalProps) {
             </select>
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">Year of study</label>
+            <label className="text-sm font-medium text-slate-200">Year of study</label>
             <select
               value={year}
               onChange={(e) => setYear(e.target.value)}
-              className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white"
+              className="h-11 w-full rounded-xl border border-white/[0.1] bg-white/[0.06] px-3.5 text-sm text-white outline-none focus:border-[rgb(var(--focus))]/60 focus:ring-4 focus:ring-[rgb(var(--focus))]/10"
             >
               <option value="">Select year</option>
               {YEARS.map((y) => (
@@ -106,21 +97,21 @@ export function ProfileSetupModal({ userId, email }: ProfileSetupModalProps) {
             </select>
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">Hostel / Block</label>
+            <label className="text-sm font-medium text-slate-200">Hostel / Block</label>
             <input
               value={hostel}
               onChange={(e) => setHostel(e.target.value)}
               placeholder="e.g. Block C, Girls Hostel"
-              className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              className="h-11 w-full rounded-xl border border-white/[0.1] bg-white/[0.06] px-3.5 text-sm text-white outline-none focus:border-[rgb(var(--focus))]/60 focus:ring-4 focus:ring-[rgb(var(--focus))]/10"
             />
           </div>
-          {error && <p className="text-xs text-red-500">{error}</p>}
+          {error && <p className="text-xs text-red-400">{error}</p>}
           <button
             type="submit"
             disabled={saving}
-            className="w-full h-11 bg-black text-white rounded-xl font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
+            className="h-11 w-full rounded-2xl bg-[linear-gradient(180deg,rgba(138,194,255,0.98),rgba(88,161,255,0.94))] font-medium text-slate-950 shadow-[0_18px_40px_rgba(88,161,255,0.32)] transition-all hover:-translate-y-0.5 hover:brightness-110 disabled:opacity-50"
           >
-            {saving ? 'Saving…' : 'Start using CUReSell'}
+            {saving ? 'Saving...' : 'Start using CUReSell'}
           </button>
         </form>
       </div>

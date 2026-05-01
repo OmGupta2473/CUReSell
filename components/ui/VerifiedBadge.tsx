@@ -9,8 +9,8 @@ export function VerifiedBadge({ size = 'sm', showLabel = false }: VerifiedBadgeP
   return (
     <span
       title="CU Verified Student"
-      className={`inline-flex items-center gap-1 bg-teal-50 text-teal-700 font-medium rounded-full
-        ${size === 'sm' ? 'text-[10px] px-1.5 py-0.5' : 'text-xs px-2 py-1'}`}
+      className={`inline-flex items-center gap-1 rounded-full border border-sky-300/20 bg-sky-400/[0.12] font-medium text-sky-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]
+        ${size === 'sm' ? 'px-1.5 py-0.5 text-[10px]' : 'px-2.5 py-1 text-xs'}`}
     >
       <svg
         width={iconSize}

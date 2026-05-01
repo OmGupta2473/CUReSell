@@ -11,7 +11,12 @@ export function DialogTrigger({ children }: { children: React.ReactNode }) {
 }
 
 export function DialogContent({ className = '', ...props }: DivProps) {
-  return <div className={`rounded-xl border border-slate-200 bg-white p-4 ${className}`.trim()} {...props} />;
+  return (
+    <div
+      className={`glass-panel rounded-2xl p-5 text-slate-100 shadow-[0_28px_70px_rgba(0,0,0,0.32)] ${className}`.trim()}
+      {...props}
+    />
+  );
 }
 
 export function DialogHeader({ className = '', ...props }: DivProps) {
@@ -19,5 +24,5 @@ export function DialogHeader({ className = '', ...props }: DivProps) {
 }
 
 export function DialogTitle({ className = '', ...props }: DivProps) {
-  return <div className={`text-lg font-semibold ${className}`.trim()} {...props} />;
+  return <div className={`text-lg font-semibold tracking-tight text-white ${className}`.trim()} {...props} />;
 }

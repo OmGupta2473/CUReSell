@@ -31,7 +31,7 @@ export function ChatThread({ conversation, initialMessages, currentUserId }: Cha
     ?.sort((a: any, b: any) => a.position - b.position)?.[0]?.url;
 
   // --- Typing indicator ---
-  const { isOtherTyping, otherTypingName, handleTyping } = useTypingIndicator(
+  const { isOtherTyping, handleTyping } = useTypingIndicator(
     conversation.id,
     currentUserId,
     otherPerson?.full_name ?? 'Someone'
@@ -181,50 +181,50 @@ export function ChatThread({ conversation, initialMessages, currentUserId }: Cha
   }
 
   return (
-    <div className="flex h-[calc(100vh-10rem)] flex-col overflow-hidden max-w-lg mx-auto w-full">
+    <div className="glass-panel mx-auto flex h-[calc(100vh-10rem)] w-full max-w-lg flex-col overflow-hidden rounded-[1.7rem]">
       {/* --- Header --- */}
-      <div className="flex-none flex items-center gap-3 px-3 py-3 border-b border-gray-100 bg-white">
+      <div className="flex flex-none items-center gap-3 border-b border-white/[0.08] bg-white/[0.04] px-3 py-3">
         <button
           onClick={() => router.back()}
-          className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors -ml-1"
+          className="-ml-1 rounded-xl p-1.5 transition-colors hover:bg-white/[0.08]"
         >
-          <ArrowLeft size={20} className="text-gray-600" />
+          <ArrowLeft size={20} className="text-slate-300" />
         </button>
         <div className="flex items-center gap-2.5 flex-1 min-w-0">
-          <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden flex items-center justify-center">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/[0.08]">
             {otherPerson?.avatar_url ? (
               <Image src={otherPerson.avatar_url} alt="" width={32} height={32} className="object-cover" />
             ) : (
-              <span className="text-xs font-semibold text-gray-600">
+              <span className="text-xs font-semibold text-slate-200">
                 {otherPerson?.full_name?.charAt(0).toUpperCase() ?? '?'}
               </span>
             )}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold truncate">{otherPerson?.full_name ?? 'Unknown'}</p>
+            <p className="truncate text-sm font-semibold text-white">{otherPerson?.full_name ?? 'Unknown'}</p>
             {isOtherTyping && (
-              <p className="text-[11px] text-green-600 font-medium animate-pulse">typing...</p>
+              <p className="animate-pulse text-[11px] font-medium text-sky-200">typing...</p>
             )}
           </div>
         </div>
         {listing && (
           <Link href={`/listing/${conversation.listing_id}`} className="flex items-center gap-2 flex-shrink-0">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-gray-100">
+            <div className="relative h-9 w-9 overflow-hidden rounded-xl bg-white/[0.08]">
               {coverImage && <Image src={coverImage} alt="" fill className="object-cover" />}
             </div>
             <div className="hidden sm:block text-right">
-              <p className="text-xs font-medium text-gray-700 truncate max-w-[100px]">{listing.title}</p>
-              <p className="text-xs text-gray-500">{formatFullPrice(listing.price)}</p>
+              <p className="max-w-[100px] truncate text-xs font-medium text-slate-200">{listing.title}</p>
+              <p className="text-xs text-slate-500">{formatFullPrice(listing.price)}</p>
             </div>
           </Link>
         )}
       </div>
 
       {/* --- Messages --- */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth space-y-2">
+      <div className="premium-scrollbar flex-1 space-y-2 overflow-y-auto px-4 py-6 scroll-smooth">
         {messages.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-sm text-gray-400">Say hi! Ask about the item.</p>
+            <p className="text-sm text-slate-500">Say hi! Ask about the item.</p>
           </div>
         )}
         {messages.map((msg: any, i: number) => {
@@ -236,18 +236,18 @@ export function ChatThread({ conversation, initialMessages, currentUserId }: Cha
           return (
             <div key={msg.id}>
               {showTime && (
-                <p className="text-center text-[10px] text-gray-400 my-2">{timeAgo(msg.created_at)}</p>
+                <p className="my-2 text-center text-[10px] text-slate-500">{timeAgo(msg.created_at)}</p>
               )}
               <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
                 <div
                   className={`max-w-[75%] px-3.5 py-2 rounded-2xl text-sm leading-relaxed
                     ${isOwn
-                      ? 'bg-black text-white rounded-br-sm'
-                      : 'bg-white border border-gray-100 text-gray-900 rounded-bl-sm'
+                      ? 'rounded-br-sm bg-[linear-gradient(180deg,rgba(138,194,255,0.96),rgba(88,161,255,0.92))] text-slate-950 shadow-[0_18px_36px_rgba(88,161,255,0.2)]'
+                      : 'rounded-bl-sm border border-white/[0.08] bg-white/[0.06] text-white'
                     }`}
                 >
                   <p className="whitespace-pre-wrap">{msg.content}</p>
-                  <div className={`flex items-center gap-1 justify-end mt-0.5 ${isOwn ? 'text-gray-300' : 'text-gray-400'}`}>
+                  <div className={`mt-0.5 flex items-center justify-end gap-1 ${isOwn ? 'text-slate-800/70' : 'text-slate-500'}`}>
                     <span className="text-[10px]">
                       {new Date(msg.created_at).toLocaleTimeString('en-IN', {
                         hour: 'numeric',
@@ -265,11 +265,11 @@ export function ChatThread({ conversation, initialMessages, currentUserId }: Cha
         {/* Typing indicator bubble */}
         {isOtherTyping && (
           <div className="flex justify-start">
-            <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
+            <div className="rounded-2xl rounded-bl-sm border border-white/[0.08] bg-white/[0.06] px-4 py-3 shadow-sm">
               <div className="flex items-center gap-1">
-                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: '0ms' }} />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: '150ms' }} />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: '300ms' }} />
               </div>
             </div>
           </div>
@@ -279,9 +279,9 @@ export function ChatThread({ conversation, initialMessages, currentUserId }: Cha
       </div>
 
       {/* --- Input --- */}
-      <div className="flex-none border-t border-gray-100 bg-white p-4">
+      <div className="flex-none border-t border-white/[0.08] bg-white/[0.04] p-4">
         {listing?.status === 'sold' ? (
-          <p className="text-center text-sm text-gray-400 py-1">This item has been sold</p>
+          <p className="py-1 text-center text-sm text-slate-500">This item has been sold</p>
         ) : (
           <form onSubmit={handleSend} className="flex items-center gap-2">
             <input
@@ -294,12 +294,12 @@ export function ChatThread({ conversation, initialMessages, currentUserId }: Cha
               }}
               placeholder="Message..."
               maxLength={1000}
-              className="flex-1 h-10 px-4 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              className="h-11 flex-1 rounded-full border border-white/[0.1] bg-white/[0.06] px-4 text-sm text-white outline-none focus:border-[rgb(var(--focus))]/60 focus:ring-4 focus:ring-[rgb(var(--focus))]/10"
             />
             <button
               type="submit"
               disabled={!input.trim() || sending}
-              className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors flex-shrink-0"
+              className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,rgba(138,194,255,0.96),rgba(88,161,255,0.92))] text-slate-950 shadow-[0_18px_40px_rgba(88,161,255,0.28)] transition-all hover:-translate-y-0.5 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Send size={16} />
             </button>

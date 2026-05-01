@@ -17,11 +17,11 @@ export function ListingCard({ listing }: ListingCardProps) {
   return (
     <Link
       href={`/listing/${listing.id}`}
-      className="group block rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-400"
+      className="group block rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[rgb(var(--focus))]"
       aria-label={`View listing: ${listing.title}`}
     >
-      <article className="h-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-colors motion-safe:transition-all motion-safe:group-hover:-translate-y-0.5 group-hover:border-gray-300 group-hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:group-hover:border-gray-700">
-        <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+      <article className="glass-panel soft-shadow h-full overflow-hidden rounded-[1.4rem] border border-white/[0.08] transition-all duration-300 motion-safe:group-hover:-translate-y-1 motion-safe:group-hover:border-white/[0.16] motion-safe:group-hover:shadow-[0_30px_60px_rgba(0,0,0,0.34)]">
+        <div className="relative aspect-square overflow-hidden bg-white/[0.04]">
           {firstImage ? (
             <Image
               src={firstImage.url}
@@ -39,26 +39,26 @@ export function ListingCard({ listing }: ListingCardProps) {
           )}
 
           {isSold && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-              <span className="rounded-full bg-gray-950/85 px-3 py-1 text-xs font-bold text-white">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/28 backdrop-blur-[2px]">
+              <span className="rounded-full border border-white/[0.16] bg-black/55 px-3 py-1 text-xs font-bold text-white">
                 Sold
               </span>
             </div>
           )}
 
           {listing.is_negotiable && !isSold && (
-            <span className="absolute left-2 top-2 rounded-full border border-white/80 bg-white/90 px-2 py-1 text-[10px] font-bold text-gray-700 shadow-sm backdrop-blur dark:border-gray-700 dark:bg-gray-950/80 dark:text-gray-200">
+            <span className="absolute left-2 top-2 rounded-full border border-white/[0.22] bg-black/35 px-2 py-1 text-[10px] font-bold text-slate-100 shadow-sm backdrop-blur-xl">
               Negotiable
             </span>
           )}
         </div>
 
-        <div className="space-y-2 p-3">
+        <div className="space-y-2 p-3.5">
           <div className="space-y-1">
-            <p className="text-base font-black tracking-tight text-gray-950 dark:text-white">
+            <p className="text-base font-black tracking-tight text-white">
               {formatPrice(listing.price)}
             </p>
-            <p className="line-clamp-2 min-h-[2.25rem] text-sm leading-snug text-gray-600 dark:text-gray-300">
+            <p className="line-clamp-2 min-h-[2.25rem] text-sm leading-snug text-slate-300">
               {listing.title}
             </p>
           </div>
@@ -74,7 +74,7 @@ export function ListingCard({ listing }: ListingCardProps) {
               </span>
               {listing.profiles?.is_cu_verified && <VerifiedBadge size="sm" />}
             </div>
-            <span className="shrink-0 text-[11px] font-medium text-gray-400">
+            <span className="shrink-0 text-[11px] font-medium text-slate-500">
               {timeAgo(listing.created_at)}
             </span>
           </div>

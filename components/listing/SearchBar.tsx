@@ -19,7 +19,7 @@ export function SearchBar({
     <div className="relative">
       <Search
         size={18}
-        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
       />
       <input
         type="search"
@@ -29,13 +29,13 @@ export function SearchBar({
         aria-label={label}
         enterKeyHint="search"
         autoComplete="off"
-        className="tap-target h-12 w-full rounded-lg border border-gray-200 bg-white pl-11 pr-14 text-sm text-gray-950 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-teal-400 focus:ring-4 focus:ring-teal-100 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-50 dark:focus:ring-teal-950"
+        className="tap-target h-12 w-full rounded-2xl border border-white/[0.1] bg-white/[0.06] pl-11 pr-14 text-sm text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_18px_40px_rgba(0,0,0,0.18)] outline-none backdrop-blur-xl placeholder:text-slate-500 focus:border-[rgb(var(--focus))]/60 focus:ring-4 focus:ring-[rgb(var(--focus))]/10"
       />
       {value && (
         <button
           type="button"
           onClick={() => onChange('')}
-          className="tap-target absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+          className="tap-target absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-white/[0.08] hover:text-white"
           aria-label="Clear search"
         >
           <X size={14} />

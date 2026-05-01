@@ -18,14 +18,14 @@ export function MessageBubble({ message, isOwn }: MessageBubbleProps) {
       <div
         className={`max-w-[82%] rounded-[20px] px-4 py-2.5 shadow-sm ${
           isOwn
-            ? 'rounded-br-md bg-gray-900 text-white'
-            : 'rounded-bl-md border border-gray-100 bg-white text-gray-800'
+            ? 'rounded-br-md bg-[linear-gradient(180deg,rgba(138,194,255,0.96),rgba(88,161,255,0.92))] text-slate-950'
+            : 'rounded-bl-md border border-white/[0.08] bg-white/[0.06] text-white'
         }`}
       >
         <p className="whitespace-pre-wrap text-sm leading-6">{message.content}</p>
         <p
           className={`mt-1 text-[10px] ${
-            isOwn ? 'text-gray-300' : 'text-gray-400'
+            isOwn ? 'text-slate-800/70' : 'text-slate-500'
           }`}
         >
           {sentAt}

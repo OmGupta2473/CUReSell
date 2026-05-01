@@ -1,7 +1,7 @@
 import { lstat, readdir, rm, rmdir, unlink } from 'node:fs/promises';
 import path from 'node:path';
 
-const target = path.join(process.cwd(), '.next');
+const targets = [path.join(process.cwd(), '.next'), path.join(process.cwd(), 'tsconfig.tsbuildinfo')];
 
 async function removeEntry(entryPath) {
   let stats;
@@ -43,7 +43,11 @@ async function removeEntry(entryPath) {
   });
 }
 
-await removeEntry(target).catch((error) => {
-  console.error('Failed to clean .next directory:', error);
-  process.exitCode = 1;
-});
+await Promise.all(
+  targets.map((target) =>
+    removeEntry(target).catch((error) => {
+      console.error(`Failed to clean ${path.basename(target)}:`, error);
+      process.exitCode = 1;
+    })
+  )
+);

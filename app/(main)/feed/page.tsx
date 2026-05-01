@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Plus, ShieldCheck, Sparkles, Store, Truck } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Sparkles, Store, Truck } from 'lucide-react';
 import { useListings } from '@/lib/hooks/useListings';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { FeedControls } from '@/components/listing/FeedControls';
@@ -53,27 +53,27 @@ function GuestLanding() {
 
   return (
     <div className="space-y-8 pb-8">
-      <section className="grid gap-6 rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 md:grid-cols-[1.2fr_0.8fr] md:p-7">
+      <section className="glass-panel grid gap-6 rounded-[1.8rem] p-5 md:grid-cols-[1.2fr_0.8fr] md:p-7">
         <div className="space-y-5">
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-sky-300/20 bg-sky-400/[0.12] px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-sky-100">
             <Sparkles size={14} />
             Campus marketplace
           </div>
 
           <div className="space-y-3">
-            <h1 className="max-w-2xl text-3xl font-black tracking-tight text-gray-950 dark:text-white md:text-5xl">
+            <h1 className="max-w-2xl text-3xl font-black tracking-tight text-white md:text-5xl">
               Buy and sell what campus life actually needs.
             </h1>
-            <p className="max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300 md:text-base">
+            <p className="max-w-2xl text-sm leading-6 text-slate-300 md:text-base">
               Find student-friendly deals, post unused items quickly, and keep every handoff inside the CU community.
             </p>
           </div>
 
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-950">
+          <div className="glass-panel-muted rounded-[1.4rem] p-3">
             <div className="pointer-events-none">
               <SearchBar value="" onChange={() => {}} placeholder="What would you like to find on campus?" />
             </div>
-            <p className="mt-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+            <p className="mt-2 text-xs font-medium text-slate-400">
               Sign in to browse real listings, chat with sellers, and post your own item.
             </p>
           </div>
@@ -81,14 +81,14 @@ function GuestLanding() {
           <div className="flex flex-col gap-2 sm:flex-row">
             <Link
               href={loginHref}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-gray-950 px-5 text-sm font-bold text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(180deg,rgba(138,194,255,0.96),rgba(88,161,255,0.92))] px-5 text-sm font-bold text-slate-950 shadow-[0_18px_40px_rgba(88,161,255,0.3)] transition-all hover:-translate-y-0.5 hover:brightness-110"
             >
               Sign in
               <ArrowRight size={16} />
             </Link>
             <Link
               href={sellHref}
-              className="inline-flex h-11 items-center justify-center rounded-lg border border-gray-200 bg-white px-5 text-sm font-bold text-gray-800 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
+              className="inline-flex h-11 items-center justify-center rounded-2xl border border-white/[0.1] bg-white/[0.06] px-5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-white/[0.1]"
             >
               Start selling
             </Link>
@@ -99,13 +99,13 @@ function GuestLanding() {
           {trustPoints.map(({ icon: Icon, title, text }) => (
             <div
               key={title}
-              className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-950"
+              className="glass-panel-muted rounded-[1.4rem] p-4"
             >
-              <div className="mb-3 inline-flex rounded-lg bg-white p-2 text-emerald-700 shadow-sm dark:bg-gray-900 dark:text-emerald-300">
+              <div className="mb-3 inline-flex rounded-xl bg-white/[0.08] p-2 text-sky-100 shadow-sm">
                 <Icon size={18} />
               </div>
-              <p className="text-sm font-bold text-gray-950 dark:text-white">{title}</p>
-              <p className="mt-1 text-sm leading-6 text-gray-500 dark:text-gray-400">{text}</p>
+              <p className="text-sm font-bold text-white">{title}</p>
+              <p className="mt-1 text-sm leading-6 text-slate-400">{text}</p>
             </div>
           ))}
         </div>
@@ -114,16 +114,16 @@ function GuestLanding() {
       <section className="space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xl font-black tracking-tight text-gray-950 dark:text-white">
+            <p className="text-xl font-black tracking-tight text-white">
               Popular on campus
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-slate-400">
               The categories students check first
             </p>
           </div>
           <Link
             href={loginHref}
-            className="inline-flex items-center gap-2 text-sm font-bold text-emerald-700 hover:text-emerald-800 dark:text-emerald-300"
+            className="inline-flex items-center gap-2 text-sm font-bold text-sky-200 hover:text-sky-100"
           >
             Browse after sign-in
             <ArrowRight size={14} />
@@ -135,15 +135,15 @@ function GuestLanding() {
             <Link
               key={category.label}
               href={loginHref}
-              className="group rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700"
+              className="glass-panel group rounded-[1.4rem] p-4 transition-all hover:-translate-y-1 hover:border-white/[0.16]"
             >
               <div className="flex items-start gap-4">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-sm font-black text-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.08] text-sm font-black text-slate-100">
                   {category.label.slice(0, 2)}
                 </span>
                 <div>
-                  <p className="text-base font-bold text-gray-950 dark:text-white">{category.label}</p>
-                  <p className="mt-1 text-sm leading-6 text-gray-500 dark:text-gray-400">
+                  <p className="text-base font-bold text-white">{category.label}</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-400">
                     {category.blurb}
                   </p>
                 </div>
@@ -185,39 +185,39 @@ function FeedContent() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 md:p-6">
+      <section className="glass-panel rounded-[1.8rem] p-5 md:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-3">
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-sky-300/20 bg-sky-400/[0.12] px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-sky-100">
               <Sparkles size={14} />
               Live campus feed
             </div>
             <div>
-              <h1 className="text-3xl font-black tracking-tight text-gray-950 dark:text-white md:text-4xl">
+              <h1 className="text-3xl font-black tracking-tight text-white md:text-4xl">
                 Find the next thing you need.
               </h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
                 Browse recent listings, narrow by category and condition, then open a chat when something fits.
               </p>
             </div>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[28rem]">
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-950">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">Showing</p>
-              <p className="mt-2 text-2xl font-black text-gray-950 dark:text-white">
+            <div className="glass-panel-muted rounded-[1.2rem] p-3">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Showing</p>
+              <p className="mt-2 text-2xl font-black text-white">
                 {filteredListings.length}
               </p>
             </div>
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-950">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">Filters</p>
-              <p className="mt-2 text-2xl font-black text-gray-950 dark:text-white">
+            <div className="glass-panel-muted rounded-[1.2rem] p-3">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Filters</p>
+              <p className="mt-2 text-2xl font-black text-white">
                 {activeFilterCount}
               </p>
             </div>
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-950">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">Area</p>
-              <p className="mt-2 truncate text-base font-black text-gray-950 dark:text-white">
+            <div className="glass-panel-muted rounded-[1.2rem] p-3">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Area</p>
+              <p className="mt-2 truncate text-base font-black text-white">
                 {profile?.hostel_block || 'Campus'}
               </p>
             </div>
@@ -225,19 +225,19 @@ function FeedContent() {
         </div>
       </section>
 
-      <section className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900 md:p-5">
+      <section className="glass-panel space-y-4 rounded-[1.6rem] p-4 md:p-5">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-lg font-black tracking-tight text-gray-950 dark:text-white">
+            <p className="text-lg font-black tracking-tight text-white">
               Search and refine
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-slate-400">
               Start broad, then narrow the feed down.
             </p>
           </div>
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 text-sm font-bold text-emerald-700 hover:text-emerald-800 dark:text-emerald-300"
+            className="inline-flex items-center gap-2 text-sm font-bold text-sky-200 hover:text-sky-100"
           >
             Full search
             <ArrowRight size={14} />
@@ -264,19 +264,19 @@ function FeedContent() {
       {isLoading && <ListingGridSkeleton />}
 
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:border-red-900/60 dark:bg-red-950/30">
-          <p className="text-sm font-semibold text-red-700 dark:text-red-300">
+        <div className="rounded-[1.4rem] border border-red-400/20 bg-red-400/[0.12] p-6 text-center">
+          <p className="text-sm font-semibold text-red-100">
             Failed to load listings. Please refresh.
           </p>
         </div>
       )}
 
       {!isLoading && !error && listings && filteredListings.length === 0 && (
-        <div className="rounded-lg border border-dashed border-gray-300 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-900">
-          <p className="text-lg font-black text-gray-950 dark:text-white">
+        <div className="glass-panel-muted rounded-[1.6rem] border border-dashed border-white/[0.12] p-8 text-center">
+          <p className="text-lg font-black text-white">
             No listings match these filters
           </p>
-          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500 dark:text-gray-400">
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">
             {search || category || activeFilterCount > 0
               ? 'Try a different keyword, category, or filter combination.'
               : 'Be the first to post something useful for campus.'}
@@ -303,14 +303,6 @@ function FeedContent() {
       )}
 
       {!isLoading && filteredListings.length > 0 && <ListingGrid listings={filteredListings} />}
-
-      <button
-        onClick={() => router.push('/listing/new')}
-        className="fixed bottom-24 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-500 text-white shadow-lg transition-colors hover:bg-emerald-600 md:hidden"
-        aria-label="Post a listing"
-      >
-        <Plus size={22} />
-      </button>
     </div>
   );
 }
